@@ -1,4 +1,5 @@
 import moment from "moment";
+import {INSERT_POSITION} from "./const.js";
 import {separateEventsIntoDays, render} from "./utils.js";
 import {createMenuTemplate} from "./view/site-menu.js";
 import {createTripControlsTemplate} from "./view/trip-controls.js";
@@ -23,23 +24,23 @@ const destination = generateDestination();
 
 const tripMain = document.querySelector(`.trip-main`);
 
-render(tripMain, createMenuTemplate(sortedEvents), `afterbegin`);
+render(tripMain, createMenuTemplate(sortedEvents), INSERT_POSITION.afterbegin);
 
 const tripControls = document.querySelector(`.trip-main__trip-controls`);
 const tripControlsTitle = tripControls.querySelector(`h2`);
 
-render(tripControlsTitle, createTripControlsTemplate(), `afterend`);
-render(tripControls, createFilterTemplate(), `beforeend`);
+render(tripControlsTitle, createTripControlsTemplate(), INSERT_POSITION.afterend);
+render(tripControls, createFilterTemplate(), INSERT_POSITION.beforeend);
 
 const tripEvents = document.querySelector(`.trip-events`);
 
-render(tripEvents, createSortTemplate(), `beforeend`);
-render(tripEvents, createNewEventTemplate(destination, sortedEvents[0]), `beforeend`);
+render(tripEvents, createSortTemplate(), INSERT_POSITION.beforeend);
+render(tripEvents, createNewEventTemplate(destination, sortedEvents[0]), INSERT_POSITION.beforeend);
 
 
 const groupSeparatedEvents = separateEventsIntoDays(sortedEvents);
 
 Object.keys(groupSeparatedEvents).forEach((oneDay, dayId) => {
   const eventDay = (formatDate) => moment(oneDay).format(formatDate);
-  render(tripEvents, createTripListTemplate(dayId + 1, eventDay, groupSeparatedEvents[oneDay]), `beforeend`);
+  render(tripEvents, createTripListTemplate(dayId + 1, eventDay, groupSeparatedEvents[oneDay]), INSERT_POSITION.beforeend);
 });
