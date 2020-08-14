@@ -25,6 +25,10 @@ export const generateDate = (maxShiftEventMinutes, startDate = null) => {
 };
 
 export const humanizeTime = (startDate, endDate) => {
+  const ONE_HOUR_IN_MINUTES = 60;
+  const ONE_DAY_IN_HOURS = 24;
+  const readable = [];
+
   const startTime = moment(startDate);
   const endTime = moment(endDate);
 
@@ -32,22 +36,18 @@ export const humanizeTime = (startDate, endDate) => {
 
   const addZeroToNumber = (number) => number < 10 && number > 0 ? Math.round(`0` + number) : Math.round(number);
 
-  const readable = [];
-  const oneHourInMinutes = 60;
-  const oneDayInHours = 24;
-
   if (getDiffTime(`days`) >= 1) {
     readable.push(`${addZeroToNumber(getDiffTime(`days`))}D
-                   ${addZeroToNumber(getDiffTime(`hours`) - (getDiffTime(`days`) * oneDayInHours))}H
-                   ${addZeroToNumber(getDiffTime(`minutes`) - (getDiffTime(`hours`) * oneHourInMinutes))}M`);
+                   ${addZeroToNumber(getDiffTime(`hours`) - (getDiffTime(`days`) * ONE_DAY_IN_HOURS))}H
+                   ${addZeroToNumber(getDiffTime(`minutes`) - (getDiffTime(`hours`) * ONE_HOUR_IN_MINUTES))}M`);
   }
 
   if (getDiffTime(`hours`) > 0 && getDiffTime(`days`) === 0) {
     readable.push(`${addZeroToNumber(getDiffTime(`hours`))}H
-                   ${addZeroToNumber(getDiffTime(`minutes`) - (getDiffTime(`hours`) * oneHourInMinutes))}M`);
+                   ${addZeroToNumber(getDiffTime(`minutes`) - (getDiffTime(`hours`) * ONE_HOUR_IN_MINUTES))}M`);
   }
 
-  if (getDiffTime(`minutes`) < oneHourInMinutes) {
+  if (getDiffTime(`minutes`) < ONE_HOUR_IN_MINUTES) {
     readable.push(`${addZeroToNumber(getDiffTime(`minutes`))}M`);
   }
 

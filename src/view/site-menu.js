@@ -21,21 +21,11 @@ const countPrice = (events) => {
 
 
 const generateTripRoute = (events) => {
-  let trip = ``;
-  let lastTrip;
-
   if (events.length > 3) {
-    trip = `${events[0].city} &mdash; . . . &mdash; ${events[events.length - 1].city}`;
-  } else {
-    for (const event of events) {
-      trip = `${trip}${event.city} — `;
-    }
-
-    lastTrip = trip.lastIndexOf(` — `);
-    trip = trip.substring(0, lastTrip);
+    return `${events[0].city} &mdash; . . . &mdash; ${events[events.length - 1].city}`;
   }
 
-  return trip;
+  return events.map((event) => event.city).join(` &mdash; `);
 };
 
 export const createMenuTemplate = (events) => {
