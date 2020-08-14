@@ -28,3 +28,10 @@ export const CITIES = [
   `Amsterdam`,
   `Saint-Petersburg`,
 ];
+
+export const INSERT_POSITION = {
+  beforebegin: `beforebegin`,
+  afterbegin: `afterbegin`,
+  beforeend: `beforeend`,
+  afterend: `afterend`,
+};
