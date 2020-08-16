@@ -1,5 +1,7 @@
-import {EVENT_ACTION} from "../const.js";
 import moment from "moment";
+import {EVENT_ACTION} from "../const.js";
+import {createElement} from "../utils.js";
+
 
 const createNewEventOfferTemplate = (event) => {
   const offers = event.offers;
@@ -60,24 +62,22 @@ const createTypeItemTemplate = (action, countStart = 0, countEnd = 7) => {
   }).join(``);
 };
 
-export const createNewEventTemplate = (destination, events) => {
-  if (events === null) {
-    events = {
-      action: {
-        preposition: `to`,
-        type: `Taxi`,
-      },
-      city: ``,
-      price: ``,
-      actionType: createTypeItemTemplate(EVENT_ACTION),
-      ationActivity: createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length),
-      offers: [],
-      startTime: new Date(),
-      endTime: new Date(),
-      isFavorite: true,
-    };
-  }
+const BLANK_EVENT = {
+  action: {
+    preposition: `to`,
+    type: `Taxi`,
+  },
+  city: ``,
+  price: ``,
+  actionType: createTypeItemTemplate(EVENT_ACTION),
+  ationActivity: createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length),
+  offers: [],
+  startTime: new Date(),
+  endTime: new Date(),
+  isFavorite: true,
+};
 
+const createNewEventTemplate = (destination, events) => {
   const {action, city, price, startDate, endDate} = events;
 
   const actionType = action.type;
@@ -90,8 +90,7 @@ export const createNewEventTemplate = (destination, events) => {
 
 
   return (
-    `
-    <form class="trip-events__item  event  event--edit" action="#" method="post">
+    `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -163,7 +162,31 @@ export const createNewEventTemplate = (destination, events) => {
           ${destinationTemplate}
         </section>
       </section>
-    </form>
-    `
+    </form>`
   );
 };
+
+
+export default class NewEvent {
+  constructor(destination, events) {
+    this._destination = destination;
+    this._events = events || BLANK_EVENT;
+    this._element = null;
+  }
+
+  get template() {
+    return createNewEventTemplate(this._destination, this._events);
+  }
+
+  get element() {
+    if (!this._element) {
+      this._element = createElement(this.template);
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,3 +1,4 @@
+import {createElement} from "../utils.js";
 import {createTripWayPointTemplate} from "../view/trip-waypoint.js";
 
 const createEventPointsTemplate = (events) => {
@@ -7,11 +8,10 @@ const createEventPointsTemplate = (events) => {
 };
 
 
-export const createTripListTemplate = (dayId, eventDate, event) => {
+const createTripListTemplate = (dayId, eventDate, event) => {
 
   return (
-    `
-    <ul class="trip-days">
+    `<ul class="trip-days">
       <li class="trip-days__item  day">
         <div class="day__info">
           <span class="day__counter">${dayId}</span>
@@ -22,6 +22,31 @@ export const createTripListTemplate = (dayId, eventDate, event) => {
           ${createEventPointsTemplate(event)}
         </ul>
       </li>
-    </ul>
-    `);
+    </ul>`
+  );
 };
+
+export default class TripList {
+  constructor(dayId, eventDate, event) {
+    this._dayId = dayId;
+    this._eventDate = eventDate;
+    this._event = event;
+    this._element = null;
+  }
+
+  get template() {
+    return createTripListTemplate(this._dayId, this._eventDate, this._event);
+  }
+
+  get element() {
+    if (!this._element) {
+      this._element = createElement(this.template);
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
