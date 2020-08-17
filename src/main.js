@@ -6,6 +6,8 @@ import SiteMenuView from "./view/site-menu.js";
 import TripControlsView from "./view/trip-controls.js";
 import FilterView from "./view/filter.js";
 import SortView from "./view/sort.js";
+import TripDaysView from "./view/trip-days.js";
+import TripWaypointView from "./view/trip-waypoint.js";
 import NewEventView from "./view/new-event.js";
 import TripListView from "./view/trip-list.js";
 
@@ -23,6 +25,36 @@ export const sortedEvents = events.slice().sort((a, b) => {
 
 const destination = generateDestination();
 
+const renderEvent = (test, event) => {
+  const tripEventList = test.querySelector(`.trip-events__list`);
+
+  const eventComponent = new TripWaypointView(event);
+  const taskEditComponent = new NewEventView(destination, event);
+
+  const replaceWaypoinToEdit = () => {
+    tripEventList.replaceChild(taskEditComponent.element, eventComponent.element);
+  };
+
+  const replaceEditToWaypoint = () => {
+    tripEventList.replaceChild(eventComponent.element, taskEditComponent.element);
+  };
+
+  eventComponent.element.querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replaceWaypoinToEdit();
+  });
+
+  taskEditComponent.element.querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replaceEditToWaypoint();
+  });
+
+  taskEditComponent.element.addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceEditToWaypoint();
+  });
+
+  render(tripEventList, eventComponent.element, insertPosition.BEFOREEND);
+};
+
 const tripMain = document.querySelector(`.trip-main`);
 
 render(tripMain, new SiteMenuView(sortedEvents).element, insertPosition.AFTERBEGIN);
@@ -36,11 +68,21 @@ render(tripControls, new FilterView().element, insertPosition.BEFOREEND);
 const tripEvents = document.querySelector(`.trip-events`);
 
 render(tripEvents, new SortView().element, insertPosition.BEFOREEND);
-render(tripEvents, new NewEventView(destination, sortedEvents[0]).element, insertPosition.BEFOREEND);
+render(tripEvents, new TripDaysView().element, insertPosition.BEFOREEND);
 
 const groupSeparatedEvents = separateEventsIntoDays(sortedEvents);
 
+const tripDays = tripEvents.querySelector(`.trip-days`);
+
 Object.keys(groupSeparatedEvents).forEach((oneDay, dayId) => {
   const eventDay = (formatDate) => moment(oneDay).format(formatDate);
-  render(tripEvents, new TripListView(dayId + 1, eventDay, groupSeparatedEvents[oneDay]).element, insertPosition.BEFOREEND);
+  const TripListComponent = new TripListView(dayId + 1, eventDay, groupSeparatedEvents[oneDay]);
+
+  render(tripDays, TripListComponent.element, insertPosition.BEFOREEND);
+
+  groupSeparatedEvents[oneDay].forEach((event) => {
+    renderEvent(TripListComponent.element, event);
+  });
 });
+
+
