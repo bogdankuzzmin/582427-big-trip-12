@@ -40,7 +40,7 @@ export default class Filter {
     return this._element;
   }
 
-  removeElement() {
+  get removeElement() {
     this._element = null;
   }
 }
