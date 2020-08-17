@@ -1,6 +1,6 @@
 import moment from "moment";
 import {MAX_EVENT_OFFERS} from "../const.js";
-import {humanizeTime} from "../utils.js";
+import {humanizeTime, createElement} from "../utils.js";
 
 const createOfferTemplate = (event) => {
   return event
@@ -14,7 +14,7 @@ const createOfferTemplate = (event) => {
        </li>`).join(``);
 };
 
-export const createTripWayPointTemplate = (event) => {
+const createTripWayPointTemplate = (event) => {
   const {action, city, price, startDate, endDate} = event;
 
   const type = action.type;
@@ -24,8 +24,7 @@ export const createTripWayPointTemplate = (event) => {
   const differenceInTime = humanizeTime(startDate, endDate);
 
   return (
-    `
-    <li class="trip-events__item">
+    `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${typeInLowerCase}.png" alt="Event type icon">
@@ -58,6 +57,29 @@ export const createTripWayPointTemplate = (event) => {
           <span class="visually-hidden">Open event</span>
         </button>
       </div>
-    </li>
-    `);
+    </li>`
+  );
 };
+
+export default class TripWaypoint {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  get template() {
+    return createTripWayPointTemplate(this._event);
+  }
+
+  get element() {
+    if (!this._element) {
+      this._element = createElement(this.template);
+    }
+
+    return this._element;
+  }
+
+  get removeElement() {
+    this._element = null;
+  }
+}

@@ -1,5 +1,17 @@
-import {EVENT_ACTION} from "../const.js";
 import moment from "moment";
+import {EVENT_ACTION} from "../const.js";
+import {createElement} from "../utils.js";
+
+const createListOffersTemplate = (event) => {
+  if (event.offers === null || event.offers.length === 0) {
+    return ``;
+  }
+
+  return `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${createNewEventOfferTemplate(event)}
+      </div>`;
+};
 
 const createNewEventOfferTemplate = (event) => {
   const offers = event.offers;
@@ -21,12 +33,16 @@ const createNewEventOfferTemplate = (event) => {
   }).join(``);
 };
 
-const createDestinationTemplate = (destination) => {
-  if (destination === null) {
+const createDestinationTemplate = (destination, event) => {
+  if (destination === null || destination.length === 0) {
     destination = {
       description: `Here is no description.`,
       photos: [`http://picsum.photos/248/152?r=0.01810293968388854`],
     };
+  }
+
+  if (event.eventId) {
+    return ``;
   }
 
   return (
@@ -43,7 +59,32 @@ const createDestinationTemplate = (destination) => {
       .join(``)}
       </div>
     </div>
-  `);
+    `
+  );
+};
+
+const createFavoriteInputTemplate = (event) => {
+  return (
+    `<input id="event-${event.eventId}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${event.isFavorite ? `checked` : ``}>
+      <label class="event__favorite-btn" for="event-${event.eventId}">
+      <span class="visually-hidden">Add to favorite</span>
+      <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+        <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+      </svg>
+    </label>`
+  );
+};
+
+const createRollupButtonTemplate = (event) => {
+  if (event.eventId) {
+    return (
+      `<button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>`
+    );
+  }
+
+  return ``;
 };
 
 const createTypeItemTemplate = (action, countStart = 0, countEnd = 7) => {
@@ -60,24 +101,22 @@ const createTypeItemTemplate = (action, countStart = 0, countEnd = 7) => {
   }).join(``);
 };
 
-export const createNewEventTemplate = (destination, events) => {
-  if (events === null) {
-    events = {
-      action: {
-        preposition: `to`,
-        type: `Taxi`,
-      },
-      city: ``,
-      price: ``,
-      actionType: createTypeItemTemplate(EVENT_ACTION),
-      ationActivity: createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length),
-      offers: [],
-      startTime: new Date(),
-      endTime: new Date(),
-      isFavorite: true,
-    };
-  }
+const BLANK_EVENT = {
+  action: {
+    preposition: `to`,
+    type: `Taxi`,
+  },
+  city: ``,
+  price: ``,
+  actionType: createTypeItemTemplate(EVENT_ACTION),
+  ationActivity: createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length),
+  offers: [],
+  startTime: new Date(),
+  endTime: new Date(),
+  isFavorite: true,
+};
 
+const createNewEventTemplate = (destination, events) => {
   const {action, city, price, startDate, endDate} = events;
 
   const actionType = action.type;
@@ -85,13 +124,13 @@ export const createNewEventTemplate = (destination, events) => {
   const actionPreposition = action.preposition;
   const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION);
   const ationActivityTemplate = createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length);
-  const offerTemplate = createNewEventOfferTemplate(events);
-  const destinationTemplate = createDestinationTemplate(destination);
-
+  const listOffersTemplate = createListOffersTemplate(events);
+  const destinationTemplate = createDestinationTemplate(destination, events);
+  const favoriteInputTemplate = createFavoriteInputTemplate(events);
+  const rollupButtonTemplate = createRollupButtonTemplate(events);
 
   return (
-    `
-    <form class="trip-events__item  event  event--edit" action="#" method="post">
+    `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -148,22 +187,46 @@ export const createNewEventTemplate = (destination, events) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__reset-btn" type="reset">${events.eventId ? `Delete` : `Cancel`}</button>
+
+        ${favoriteInputTemplate}
+        ${rollupButtonTemplate}
+
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${offerTemplate}
-          </div>
+          ${listOffersTemplate}
         </section>
 
         <section class="event__section  event__section--destination">
           ${destinationTemplate}
         </section>
       </section>
-    </form>
-    `
+    </form>`
   );
 };
+
+
+export default class NewEvent {
+  constructor(destination, events) {
+    this._destination = destination;
+    this._events = events || BLANK_EVENT;
+    this._element = null;
+  }
+
+  get template() {
+    return createNewEventTemplate(this._destination, this._events);
+  }
+
+  get element() {
+    if (!this._element) {
+      this._element = createElement(this.template);
+    }
+
+    return this._element;
+  }
+
+  get removeElement() {
+    this._element = null;
+  }
+}

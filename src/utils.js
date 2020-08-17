@@ -1,4 +1,30 @@
 import moment from "moment";
+import {insertPosition} from "./const.js";
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case insertPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case insertPosition.BEFOREEND:
+      container.append(element);
+      break;
+    case insertPosition.AFTEREND:
+      container.after(element);
+      break;
+  }
+};
+
+export const renderTemplate = (container, template, place) => {
+  container.insertAdjacentHTML(place, template);
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
 
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -10,10 +36,6 @@ export const getRandomInteger = (a = 0, b = 1) => {
 export const getRandomElement = (arr) => arr[(Math.random() * arr.length) | 0];
 
 export const shuffleArray = (arr) => arr.sort(() => 0.5 - Math.random());
-
-export const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 export const generateDate = (maxShiftEventMinutes, startDate = null) => {
   const millisecondsShift = 1000 * 60 * maxShiftEventMinutes;
@@ -34,7 +56,7 @@ export const humanizeTime = (startDate, endDate) => {
 
   const getDiffTime = (value) => endTime.diff(startTime, value);
 
-  const addZeroToNumber = (number) => number < 10 && number > 0 ? Math.round(`0` + number) : Math.round(number);
+  const addZeroToNumber = (number) => number < 10 && number > 0 ? `0` + number : Math.round(number);
 
   if (getDiffTime(`days`) >= 1) {
     readable.push(`${addZeroToNumber(getDiffTime(`days`))}D

@@ -1,6 +1,11 @@
 import {getRandomElement, getRandomInteger, generateDate} from "../utils.js";
 import {CITIES, EVENT_ACTION} from "../const.js";
 import {generateOffers} from "../mock/offers.js";
+import randomId from "random-id";
+
+const MAX_SHIFT_EVENT_MINUTES = 150;
+const DAY_GAP = 5;
+const maxShiftStartEventMinutes = DAY_GAP * 24 * 60;
 
 const generateAction = () => {
   const type = getRandomElement(EVENT_ACTION.types);
@@ -18,26 +23,24 @@ const generateAction = () => {
   };
 };
 
-const MAX_SHIFT_EVENT_MINUTES = 1600;
-const DAY_GAP = 5;
-const maxShiftStartEventMinutes = DAY_GAP * 24 * 60;
-
 export const generateEvent = () => {
+  const eventId = randomId(3);
   const action = generateAction();
   const city = getRandomElement(CITIES);
   const price = getRandomInteger(10, 50) * 10;
   const offers = generateOffers();
   const startDate = generateDate(maxShiftStartEventMinutes);
   const endDate = generateDate(MAX_SHIFT_EVENT_MINUTES, startDate);
-  const isFavorit = Boolean(getRandomInteger(0, 1));
+  const isFavorite = Boolean(getRandomInteger(0, 1));
 
   return {
+    eventId,
     action,
     city,
     price,
     offers,
     startDate,
     endDate,
-    isFavorit,
+    isFavorite,
   };
 };
