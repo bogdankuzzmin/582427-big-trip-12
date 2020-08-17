@@ -56,7 +56,7 @@ export const humanizeTime = (startDate, endDate) => {
 
   const getDiffTime = (value) => endTime.diff(startTime, value);
 
-  const addZeroToNumber = (number) => number < 10 && number > 0 ? Math.round(`0` + number) : Math.round(number);
+  const addZeroToNumber = (number) => number < 10 && number > 0 ? `0` + number : Math.round(number);
 
   if (getDiffTime(`days`) >= 1) {
     readable.push(`${addZeroToNumber(getDiffTime(`days`))}D
