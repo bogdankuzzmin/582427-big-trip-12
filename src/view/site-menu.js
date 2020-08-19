@@ -3,6 +3,10 @@ import {MAX_EVENT_OFFERS} from "../const.js";
 import {createElement} from "../utils.js";
 
 const countPrice = (events) => {
+  if (events.length === 0) {
+    return `0`;
+  }
+
   let price = 0;
 
   events.forEach((event) => {
@@ -20,8 +24,11 @@ const countPrice = (events) => {
   return price;
 };
 
-
 const generateTripRoute = (events) => {
+  if (events.length === 0) {
+    return ``;
+  }
+
   if (events.length > 3) {
     return `${events[0].city} &mdash; . . . &mdash; ${events[events.length - 1].city}`;
   }
@@ -29,20 +36,29 @@ const generateTripRoute = (events) => {
   return events.map((event) => event.city).join(` &mdash; `);
 };
 
-const createMenuTemplate = (events) => {
-  const price = countPrice(events);
-  const city = generateTripRoute(events);
+const generateRouteTime = (events) => {
+  if (events.length === 0) {
+    return ``;
+  }
 
   const firstDay = moment(events[0].startDate).format(`MMM DD`);
   const eventsLength = events.length - 1;
   const lastDay = moment(events[eventsLength].startDate).format(`DD`);
+
+  return `<p class="trip-info__dates">${firstDay}&nbsp;&mdash;&nbsp;${lastDay}</p>`;
+};
+
+const createMenuTemplate = (events) => {
+  const price = countPrice(events);
+  const city = generateTripRoute(events);
+  const routeTimeTemplate = generateRouteTime(events);
 
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
         <h1 class="trip-info__title">${city}</h1>
 
-        <p class="trip-info__dates">${firstDay}&nbsp;&mdash;&nbsp;${lastDay}</p>
+        ${routeTimeTemplate}
       </div>
 
       <p class="trip-info__cost">
