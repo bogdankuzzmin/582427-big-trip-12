@@ -10,17 +10,19 @@ import TripDaysView from "./view/trip-days.js";
 import TripWaypointView from "./view/trip-waypoint.js";
 import NewEventView from "./view/new-event.js";
 import TripListView from "./view/trip-list.js";
+import NoPointsView from "./view/no-points.js";
 
 import {generateEvent} from "./mock/event.js";
 import {generateDestination} from "./mock/destination.js";
 
-const MAX_WAYPOINTS = 20;
+const MAX_WAYPOINTS = 22;
 
-export const events = new Array(MAX_WAYPOINTS).fill().map(generateEvent);
+const events = new Array(MAX_WAYPOINTS).fill().map(generateEvent);
 
-export const sortedEvents = events.slice().sort((a, b) => {
+const sortedEvents = events.slice().sort((a, b) => {
   return moment(a.startDate) - moment(b.startDate);
 });
+
 // console.log(sortedEvents);
 
 const destination = generateDestination();
@@ -39,12 +41,23 @@ const renderEvent = (test, event) => {
     tripEventList.replaceChild(eventComponent.element, taskEditComponent.element);
   };
 
+  const escKeyDownHandler = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      replaceEditToWaypoint();
+
+      document.removeEventListener(`keydown`, escKeyDownHandler);
+    }
+  };
+
   eventComponent.element.querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
     replaceWaypoinToEdit();
+    document.addEventListener(`keydown`, escKeyDownHandler);
   });
 
   taskEditComponent.element.querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
     replaceEditToWaypoint();
+    document.removeEventListener(`keydown`, escKeyDownHandler);
   });
 
   taskEditComponent.element.addEventListener(`submit`, (evt) => {
@@ -62,27 +75,32 @@ const tripControls = document.querySelector(`.trip-main__trip-controls`);
 const tripControlsTitle = tripControls.querySelector(`h2`);
 
 render(tripControlsTitle, new TripControlsView().element, insertPosition.AFTEREND);
-
 render(tripControls, new FilterView().element, insertPosition.BEFOREEND);
 
-const tripEvents = document.querySelector(`.trip-events`);
+const renderTripBlock = (testEvents) => {
+  const tripEvents = document.querySelector(`.trip-events`);
 
-render(tripEvents, new SortView().element, insertPosition.BEFOREEND);
-render(tripEvents, new TripDaysView().element, insertPosition.BEFOREEND);
+  if (testEvents.length === 0) {
+    render(tripEvents, new NoPointsView().element, insertPosition.BEFOREEND);
+    return;
+  }
 
-const groupSeparatedEvents = separateEventsIntoDays(sortedEvents);
+  render(tripEvents, new SortView().element, insertPosition.BEFOREEND);
+  render(tripEvents, new TripDaysView().element, insertPosition.BEFOREEND);
 
-const tripDays = tripEvents.querySelector(`.trip-days`);
+  const tripDays = tripEvents.querySelector(`.trip-days`);
+  const groupSeparatedEvents = separateEventsIntoDays(sortedEvents);
 
-Object.keys(groupSeparatedEvents).forEach((oneDay, dayId) => {
-  const eventDay = (formatDate) => moment(oneDay).format(formatDate);
-  const TripListComponent = new TripListView(dayId + 1, eventDay, groupSeparatedEvents[oneDay]);
+  Object.keys(groupSeparatedEvents).forEach((oneDay, dayId) => {
+    const eventDay = (formatDate) => moment(oneDay).format(formatDate);
+    const TripListComponent = new TripListView(dayId + 1, eventDay, groupSeparatedEvents[oneDay]);
 
-  render(tripDays, TripListComponent.element, insertPosition.BEFOREEND);
+    render(tripDays, TripListComponent.element, insertPosition.BEFOREEND);
 
-  groupSeparatedEvents[oneDay].forEach((event) => {
-    renderEvent(TripListComponent.element, event);
+    groupSeparatedEvents[oneDay].forEach((event) => {
+      renderEvent(TripListComponent.element, event);
+    });
   });
-});
+};
 
-
+renderTripBlock(events);
