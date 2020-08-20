@@ -1,6 +1,7 @@
 import moment from "moment";
 import {insertPosition} from "./const.js";
-import {separateEventsIntoDays, render} from "./utils.js";
+import {render} from "./utils/render.js";
+import {separateEventsIntoDays} from "./utils/event.js";
 
 import SiteMenuView from "./view/site-menu.js";
 import TripControlsView from "./view/trip-controls.js";

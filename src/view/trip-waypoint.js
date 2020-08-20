@@ -1,6 +1,6 @@
 import moment from "moment";
 import {MAX_EVENT_OFFERS} from "../const.js";
-import {humanizeTime} from "../utils.js";
+import {humanizeTime} from "../utils/event.js";
 import AbstractView from "./abstract.js";
 
 const createOfferTemplate = (event) => {

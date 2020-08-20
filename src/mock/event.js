@@ -1,4 +1,5 @@
-import {getRandomElement, getRandomInteger, generateDate} from "../utils.js";
+import {getRandomElement, getRandomInteger} from "../utils/common.js";
+import {generateDate} from "../utils/event.js";
 import {CITIES, EVENT_ACTION} from "../const.js";
 import {generateOffers} from "../mock/offers.js";
 import randomId from "random-id";

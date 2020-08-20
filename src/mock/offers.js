@@ -1,4 +1,4 @@
-import {shuffleArray, getRandomInteger} from "../utils";
+import {shuffleArray, getRandomInteger} from "../utils/common.js";
 
 const OFFERS = [`Add luggae`, `Add meal`, `Choose seats`, `Travel by train`, `Rent a car`, `Lunch in city`, `Add breakfast`, `Order Uber`];
 
