@@ -213,9 +213,31 @@ export default class NewEvent extends AbstractView {
 
     this._destination = destination;
     this._events = events || BLANK_EVENT;
+    this._editEventClickHandler = this._editEventClickHandler.bind(this);
+    this._formEventSubmitHandler = this._formEventSubmitHandler.bind(this);
   }
 
   get template() {
     return createNewEventTemplate(this._destination, this._events);
+  }
+
+  _editEventClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editEventClick();
+  }
+
+  _formEventSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formEventSubmit();
+  }
+
+  setEditEventClickHandler(callback) {
+    this._callback.editEventClick = callback;
+    this.element.querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editEventClickHandler);
+  }
+
+  setFormEventSubmitHandler(callback) {
+    this._callback.formEventSubmit = callback;
+    this.element.addEventListener(`submit`, this._formEventSubmitHandler);
   }
 }

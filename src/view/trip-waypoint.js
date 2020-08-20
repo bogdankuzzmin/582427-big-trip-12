@@ -71,9 +71,20 @@ export default class TripWaypoint extends AbstractView {
     super();
 
     this._event = event;
+    this._eventClickHandler = this._eventClickHandler.bind(this);
   }
 
   get template() {
     return createTripWayPointTemplate(this._event);
+  }
+
+  _eventClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.eventClick();
+  }
+
+  setEventClickHandler(callback) {
+    this._callback.eventClick = callback;
+    this.element.querySelector(`.event__rollup-btn`).addEventListener(`click`, this._eventClickHandler);
   }
 }

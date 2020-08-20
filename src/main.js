@@ -51,19 +51,19 @@ const renderEvent = (test, event) => {
     }
   };
 
-  eventComponent.element.querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+  eventComponent.setEventClickHandler(() => {
     replaceWaypoinToEdit();
     document.addEventListener(`keydown`, escKeyDownHandler);
   });
 
-  taskEditComponent.element.querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+  taskEditComponent.setEditEventClickHandler(() => {
     replaceEditToWaypoint();
     document.removeEventListener(`keydown`, escKeyDownHandler);
   });
 
-  taskEditComponent.element.addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
+  taskEditComponent.setFormEventSubmitHandler(() => {
     replaceEditToWaypoint();
+    document.removeEventListener(`keydown`, escKeyDownHandler);
   });
 
   render(tripEventList, eventComponent.element, insertPosition.BEFOREEND);
