@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const createNoPointstemplate = () => {
   return (
@@ -10,24 +10,8 @@ const createNoPointstemplate = () => {
   );
 };
 
-export default class NoPoints {
-  constructor() {
-    this._element = null;
-  }
-
+export default class NoPoints extends AbstractView {
   get template() {
     return createNoPointstemplate();
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-
-    return this._element;
-  }
-
-  get removeElement() {
-    this._element = null;
   }
 }

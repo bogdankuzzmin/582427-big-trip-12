@@ -1,8 +1,13 @@
 import moment from "moment";
 import {MAX_EVENT_OFFERS} from "../const.js";
-import {humanizeTime, createElement} from "../utils.js";
+import {humanizeTime} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const createOfferTemplate = (event) => {
+  if (event.length === 0) {
+    return ``;
+  }
+
   return event
     .filter((it) => it.isChecked === true)
     .slice(0, MAX_EVENT_OFFERS)
@@ -61,25 +66,14 @@ const createTripWayPointTemplate = (event) => {
   );
 };
 
-export default class TripWaypoint {
+export default class TripWaypoint extends AbstractView {
   constructor(event) {
+    super();
+
     this._event = event;
-    this._element = null;
   }
 
   get template() {
     return createTripWayPointTemplate(this._event);
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-
-    return this._element;
-  }
-
-  get removeElement() {
-    this._element = null;
   }
 }

@@ -1,6 +1,6 @@
 import moment from "moment";
 import {EVENT_ACTION} from "../const.js";
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const createListOffersTemplate = (event) => {
   if (event.offers === null || event.offers.length === 0) {
@@ -207,26 +207,15 @@ const createNewEventTemplate = (destination, events) => {
 };
 
 
-export default class NewEvent {
+export default class NewEvent extends AbstractView {
   constructor(destination, events) {
+    super();
+
     this._destination = destination;
     this._events = events || BLANK_EVENT;
-    this._element = null;
   }
 
   get template() {
     return createNewEventTemplate(this._destination, this._events);
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-
-    return this._element;
-  }
-
-  get removeElement() {
-    this._element = null;
   }
 }

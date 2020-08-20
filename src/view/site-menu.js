@@ -1,6 +1,6 @@
 import moment from "moment";
 import {MAX_EVENT_OFFERS} from "../const.js";
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const countPrice = (events) => {
   if (events.length === 0) {
@@ -68,25 +68,14 @@ const createMenuTemplate = (events) => {
   );
 };
 
-export default class SiteMenu {
+export default class SiteMenu extends AbstractView {
   constructor(events) {
+    super();
+
     this._events = events;
-    this._element = null;
   }
 
   get template() {
     return createMenuTemplate(this._events);
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

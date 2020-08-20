@@ -1,12 +1,4 @@
-import {createElement} from "../utils.js";
-// import {createTripWayPointTemplate} from "../view/trip-waypoint.js";
-
-// const createEventPointsTemplate = (events) => {
-//   return events
-//     .map((event) => createTripWayPointTemplate(event))
-//     .join(``);
-// };
-// ${createEventPointsTemplate(event)}
+import AbstractView from "./abstract.js";
 
 const createTripListTemplate = (dayId, eventDate) => {
   return (
@@ -23,26 +15,15 @@ const createTripListTemplate = (dayId, eventDate) => {
   );
 };
 
-export default class TripList {
+export default class TripList extends AbstractView {
   constructor(dayId, eventDate) {
+    super();
+
     this._dayId = dayId;
     this._eventDate = eventDate;
-    this._element = null;
   }
 
   get template() {
     return createTripListTemplate(this._dayId, this._eventDate);
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
