@@ -29,9 +29,22 @@ export const CITIES = [
   `Saint-Petersburg`,
 ];
 
-export const insertPosition = {
+export const InsertPosition = {
   BEFOREBEGIN: `beforebegin`,
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`,
   AFTEREND: `afterend`,
 };
+
+export const SortType = {
+  EVENT: `event`,
+  TIME: `time`,
+  PRICE: `price`
+};
+
+export const FilterType = {
+  EVERYTHING: `default`,
+  FUTURE: `future`,
+  PAST: `past`,
+};
+

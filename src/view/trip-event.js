@@ -1,26 +1,32 @@
 import moment from "moment";
 import {MAX_EVENT_OFFERS} from "../const.js";
-import {humanizeTime, createElement} from "../utils.js";
+import {humanizeTime} from "../utils/event.js";
+import AbstractView from "./abstract.js";
 
-const createOfferTemplate = (event) => {
-  return event
-    .filter((it) => it.isChecked === true)
+const createOffersTemplate = (events) => {
+  if (events.length === 0) {
+    return ``;
+  }
+
+  return events
+    .filter((event) => event.isChecked === true)
     .slice(0, MAX_EVENT_OFFERS)
     .map((it) =>
       `<li class="event__offer">
         <span class="event__offer-title">${it.name}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${it.price}</span>
-       </li>`).join(``);
+       </li>`
+    ).join(``);
 };
 
-const createTripWayPointTemplate = (event) => {
+const createTripEventTemplate = (event) => {
   const {action, city, price, startDate, endDate} = event;
 
   const type = action.type;
   const typeInLowerCase = type.toLowerCase();
   const preposition = event.action.preposition;
-  const offers = createOfferTemplate(event.offers);
+  const offers = createOffersTemplate(event.offers);
   const differenceInTime = humanizeTime(startDate, endDate);
 
   return (
@@ -61,25 +67,25 @@ const createTripWayPointTemplate = (event) => {
   );
 };
 
-export default class TripWaypoint {
-  constructor(event) {
-    this._event = event;
-    this._element = null;
+export default class TripEvent extends AbstractView {
+  constructor(events) {
+    super();
+
+    this._events = events;
+    this._eventClickHandler = this._eventClickHandler.bind(this);
   }
 
   get template() {
-    return createTripWayPointTemplate(this._event);
+    return createTripEventTemplate(this._events);
   }
 
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-
-    return this._element;
+  _eventClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.eventClick();
   }
 
-  get removeElement() {
-    this._element = null;
+  setEventClickHandler(callback) {
+    this._callback.eventClick = callback;
+    this.element.querySelector(`.event__rollup-btn`).addEventListener(`click`, this._eventClickHandler);
   }
 }
