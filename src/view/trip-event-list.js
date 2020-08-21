@@ -7,7 +7,6 @@ const createTripListTemplate = (dayId, eventDate) => {
           <span class="day__counter">${dayId}</span>
           <time class="day__date" datetime="${eventDate(`YYYY-MM-DD`)}">${eventDate(`MMM DD`)}</time>
         </div>
-
         <ul class="trip-events__list">
 
         </ul>
@@ -15,7 +14,7 @@ const createTripListTemplate = (dayId, eventDate) => {
   );
 };
 
-export default class TripList extends AbstractView {
+export default class TripEventList extends AbstractView {
   constructor(dayId, eventDate) {
     super();
 

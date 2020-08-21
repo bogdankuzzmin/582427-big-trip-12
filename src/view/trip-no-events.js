@@ -1,6 +1,6 @@
 import AbstractView from "./abstract.js";
 
-const createNoPointstemplate = () => {
+const createTripNoEventsTemplate = () => {
   return (
     `<section class="trip-events">
       <h2 class="visually-hidden">Trip events</h2>
@@ -10,8 +10,8 @@ const createNoPointstemplate = () => {
   );
 };
 
-export default class NoPoints extends AbstractView {
+export default class TripNoEvents extends AbstractView {
   get template() {
-    return createNoPointstemplate();
+    return createTripNoEventsTemplate();
   }
 }

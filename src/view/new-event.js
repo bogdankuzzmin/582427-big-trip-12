@@ -2,34 +2,33 @@ import moment from "moment";
 import {EVENT_ACTION} from "../const.js";
 import AbstractView from "./abstract.js";
 
-const createListOffersTemplate = (event) => {
-  if (event.offers === null || event.offers.length === 0) {
+const createListOffersTemplate = (offers) => {
+  if (offers === null || offers.length === 0) {
     return ``;
   }
 
-  return `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
-      <div class="event__available-offers">
-        ${createNewEventOfferTemplate(event)}
-      </div>`;
+  return (
+    `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+      ${createNewOfferTemplate(offers)}
+    </div>`
+  );
 };
 
-const createNewEventOfferTemplate = (event) => {
-  const offers = event.offers;
-
+const createNewOfferTemplate = (offers) => {
   return offers.map((offer) => {
     const offerNameId = offer.name.split(` `).join(`-`).toLowerCase();
 
     return (
-      `
-      <div class="event__offer-selector">
+      `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerNameId}" type="checkbox" name="event-offer-${offerNameId}" ${offer.isChecked ? `checked` : ``}>
         <label class="event__offer-label" for="event-offer-${offerNameId}">
           <span class="event__offer-title">${offer.name}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
         </label>
-      </div>
-      `);
+      </div>`
+    );
   }).join(``);
 };
 
@@ -46,11 +45,10 @@ const createDestinationTemplate = (destination, event) => {
   }
 
   return (
-    `
-    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-     <p class="event__destination-description">
-      ${destination.description}
-     </p>
+    `<h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">
+        ${destination.description}
+      </p>
 
     <div class="event__photos-container">
       <div class="event__photos-tape">
@@ -58,8 +56,7 @@ const createDestinationTemplate = (destination, event) => {
       (`<img class="event__photo" src="${photoURL}" alt="Event photo">`))
       .join(``)}
       </div>
-    </div>
-    `
+    </div>`
   );
 };
 
@@ -79,8 +76,8 @@ const createRollupButtonTemplate = (event) => {
   if (event.eventId) {
     return (
       `<button class="event__rollup-btn" type="button">
-      <span class="visually-hidden">Open event</span>
-    </button>`
+        <span class="visually-hidden">Open event</span>
+      </button>`
     );
   }
 
@@ -88,17 +85,19 @@ const createRollupButtonTemplate = (event) => {
 };
 
 const createTypeItemTemplate = (action, countStart = 0, countEnd = 7) => {
-  return action.types.slice(countStart, countEnd).map((actionType) => {
-    const lowCaseType = actionType.toLowerCase();
+  return action.types
+    .slice(countStart, countEnd)
+    .map((actionType) => {
+      const lowCaseType = actionType.toLowerCase();
 
-    return (
-      `
-      <div class="event__type-item">
-        <input id="event-type-${lowCaseType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
-        value="${lowCaseType}">
-        <label class="event__type-label  event__type-label--${lowCaseType}" for="event-type-${lowCaseType}-1">${actionType}</label>
-      </div>`);
-  }).join(``);
+      return (
+        `<div class="event__type-item">
+          <input id="event-type-${lowCaseType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
+          value="${lowCaseType}">
+          <label class="event__type-label  event__type-label--${lowCaseType}" for="event-type-${lowCaseType}-1">${actionType}</label>
+        </div>`
+      );
+    }).join(``);
 };
 
 const BLANK_EVENT = {
@@ -124,7 +123,7 @@ const createNewEventTemplate = (destination, events) => {
   const actionPreposition = action.preposition;
   const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION);
   const ationActivityTemplate = createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length);
-  const listOffersTemplate = createListOffersTemplate(events);
+  const listOffersTemplate = createListOffersTemplate(events.offers);
   const destinationTemplate = createDestinationTemplate(destination, events);
   const favoriteInputTemplate = createFavoriteInputTemplate(events);
   const rollupButtonTemplate = createRollupButtonTemplate(events);
@@ -205,7 +204,6 @@ const createNewEventTemplate = (destination, events) => {
     </form>`
   );
 };
-
 
 export default class NewEvent extends AbstractView {
   constructor(destination, events) {

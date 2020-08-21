@@ -3,29 +3,30 @@ import {MAX_EVENT_OFFERS} from "../const.js";
 import {humanizeTime} from "../utils/event.js";
 import AbstractView from "./abstract.js";
 
-const createOfferTemplate = (event) => {
-  if (event.length === 0) {
+const createOffersTemplate = (events) => {
+  if (events.length === 0) {
     return ``;
   }
 
-  return event
-    .filter((it) => it.isChecked === true)
+  return events
+    .filter((event) => event.isChecked === true)
     .slice(0, MAX_EVENT_OFFERS)
     .map((it) =>
       `<li class="event__offer">
         <span class="event__offer-title">${it.name}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${it.price}</span>
-       </li>`).join(``);
+       </li>`
+    ).join(``);
 };
 
-const createTripWayPointTemplate = (event) => {
+const createTripEventTemplate = (event) => {
   const {action, city, price, startDate, endDate} = event;
 
   const type = action.type;
   const typeInLowerCase = type.toLowerCase();
   const preposition = event.action.preposition;
-  const offers = createOfferTemplate(event.offers);
+  const offers = createOffersTemplate(event.offers);
   const differenceInTime = humanizeTime(startDate, endDate);
 
   return (
@@ -66,16 +67,16 @@ const createTripWayPointTemplate = (event) => {
   );
 };
 
-export default class TripWaypoint extends AbstractView {
-  constructor(event) {
+export default class TripEvent extends AbstractView {
+  constructor(events) {
     super();
 
-    this._event = event;
+    this._events = events;
     this._eventClickHandler = this._eventClickHandler.bind(this);
   }
 
   get template() {
-    return createTripWayPointTemplate(this._event);
+    return createTripEventTemplate(this._events);
   }
 
   _eventClickHandler(evt) {
