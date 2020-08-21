@@ -1,15 +1,24 @@
-import {insertPosition} from "../const.js";
+import {InsertPosition} from "../const.js";
+import Abstract from "../view/abstract.js";
 
-export const render = (container, element, place) => {
+export const render = (container, child, place) => {
+  if (container instanceof Abstract) {
+    container = container.element;
+  }
+
+  if (child instanceof Abstract) {
+    child = child.element;
+  }
+
   switch (place) {
-    case insertPosition.AFTERBEGIN:
-      container.prepend(element);
+    case InsertPosition.AFTERBEGIN:
+      container.prepend(child);
       break;
-    case insertPosition.BEFOREEND:
-      container.append(element);
+    case InsertPosition.BEFOREEND:
+      container.append(child);
       break;
-    case insertPosition.AFTEREND:
-      container.after(element);
+    case InsertPosition.AFTEREND:
+      container.after(child);
       break;
   }
 };
@@ -23,4 +32,31 @@ export const createElement = (template) => {
   newElement.innerHTML = template;
 
   return newElement.firstChild;
+};
+
+export const replace = (newChild, oldChild) => {
+  if (oldChild instanceof Abstract) {
+    oldChild = oldChild.element;
+  }
+
+  if (newChild instanceof Abstract) {
+    newChild = newChild.element;
+  }
+
+  const parent = oldChild.parentElement;
+
+  if (parent === null || oldChild === null || newChild === null) {
+    throw new Error(`Can't replace unexisting elements`);
+  }
+
+  parent.replaceChild(newChild, oldChild);
+};
+
+export const remove = (component) => {
+  if (!(component instanceof Abstract)) {
+    throw new Error(`Can remove only components`);
+  }
+
+  component.element.remove();
+  component.removeElement();
 };

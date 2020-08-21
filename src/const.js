@@ -29,7 +29,7 @@ export const CITIES = [
   `Saint-Petersburg`,
 ];
 
-export const insertPosition = {
+export const InsertPosition = {
   BEFOREBEGIN: `beforebegin`,
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`,
