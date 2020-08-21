@@ -46,4 +46,5 @@ export const FilterType = {
   EVERYTHING: `default`,
   FUTURE: `future`,
   PAST: `past`,
-}
+};
+
