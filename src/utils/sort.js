@@ -1,12 +1,16 @@
+import moment from "moment";
+
 export const sortTypeEvent = (eventA, eventB) => {
-  return eventA.city.localeCompare(eventB.city);
+  return eventA.startDate - eventB.startDate;
 };
 
 export const sortTypeTime = (timeA, timeB) => {
-  return timeA.startDate - timeB.startDate;
+  const durationA = moment(timeA.endDate).diff(moment(timeA.startDate));
+  const durationB = moment(timeB.endDate).diff(moment(timeB.startDate));
+  return durationB - durationA;
 };
 
 export const sortTypePrice = (priceA, priceB) => {
-  return priceA.price - priceB.price;
+  return priceB.price - priceA.price;
 };
 
