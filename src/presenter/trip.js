@@ -10,12 +10,12 @@ import TripSortView from "../view/trip-sort.js";
 import TripEventView from "../view/trip-event.js";
 import NewEventView from "../view/new-event.js";
 
-import {sortTypeEvent, sortTypeTime, sortTypePrice} from "../utils/sort.js";
+import {sortTypeTime, sortTypePrice} from "../utils/sort.js";
 
 export default class Trip {
   constructor(tripEventContainer) {
     this._tripEventContainer = tripEventContainer;
-    this._currentSortType = SortType.TIME;
+    this._currentSortType = SortType.EVENT;
 
     this._tripSortComponent = new TripSortView();
     this._tripEventDaysComponent = new TripEventDaysView();
@@ -27,7 +27,7 @@ export default class Trip {
   init(destination, events) {
     this._tripEvents = events.slice();
     this._tripDestination = destination;
-    // this._sourcedTaskEvents = events.slice();
+    this._sourcedTaskEvents = events.slice();
 
     this._renderEvents();
   }
@@ -50,10 +50,10 @@ export default class Trip {
   _sortTripEvents(sortType) {
     switch (sortType) {
       case SortType.EVENT:
-        this._tripEvents.sort(sortTypeEvent);
+        // this._tripEvents.sort(sortTypeEvent);
+        this._tripEvents = this._sourcedTaskEvents.slice();
         break;
       case SortType.TIME:
-        // this._tripEvents = this._sourcedTaskEvents.slice();
         this._tripEvents.sort(sortTypeTime);
         break;
       case SortType.PRICE:
@@ -71,6 +71,11 @@ export default class Trip {
 
     this._sortTripEvents(sortType);
     this._clearTripEventsList();
+
+    if (sortType === `event`) {
+      this._renderTripEventDays();
+    }
+
     this._renderEventsWithoutDays();
   }
 
