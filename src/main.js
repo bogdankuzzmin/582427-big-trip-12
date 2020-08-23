@@ -1,6 +1,6 @@
 import {InsertPosition} from "./const.js";
 import {render} from "./utils/render.js";
-import {sortTypeTime} from "./utils/sort.js";
+import {sortTypeEvent} from "./utils/sort.js";
 
 import TripPresenter from "./presenter/trip.js";
 
@@ -15,7 +15,7 @@ const MAX_WAYPOINTS = 22;
 
 const destination = generateDestination();
 const events = new Array(MAX_WAYPOINTS).fill().map(generateEvent);
-const sortedEvents = events.sort(sortTypeTime);
+const sortedEvents = events.sort(sortTypeEvent);
 // console.log(sortedEvents);
 
 const tripMain = document.querySelector(`.trip-main`);
