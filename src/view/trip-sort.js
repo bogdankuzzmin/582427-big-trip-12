@@ -9,7 +9,7 @@ const createTripSortItemTemplate = () => {
         <label class="trip-sort__btn" for="sort-${type}" data-sort-type="${type}">${type}</label>
       </div>`
     );
-  });
+  }).join(``);
 };
 
 const createTripSortTemplate = () => {
