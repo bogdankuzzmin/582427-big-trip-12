@@ -37,4 +37,8 @@ export default class TripEventList extends AbstractView {
   get template() {
     return createTripListTemplate(this._dayId, this._eventDate);
   }
+
+  getEventListContainer() {
+    return this._element.querySelector(`.trip-events__list`);
+  }
 }
