@@ -1,9 +1,10 @@
 import moment from "moment";
-import {render, replace} from "../utils/render.js";
+import {render, remove} from "../utils/render.js";
+import {updateItem} from "../utils/common.js";
 import {separateEventsIntoDays} from "../utils/event.js";
 import {InsertPosition, SortType} from "../const.js";
 
-import TripEventPresenter from "./trip-event.js"
+import TripEventPresenter from "./trip-event.js";
 
 import TripEventListView from "../view/trip-event-list.js";
 import TripEventDaysView from "../view/trip-event-days.js";
@@ -16,12 +17,16 @@ export default class Trip {
   constructor(tripEventContainer) {
     this._tripEventContainer = tripEventContainer;
     this._currentSortType = SortType.EVENT;
+    this._tripEventPresenter = {};
+    this._tripDaysStorage = {};
 
     this._tripSortComponent = new TripSortView();
     this._tripEventDaysComponent = new TripEventDaysView();
     this._tripNoEventsComponent = new TripNoEventsView();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleTripEventChange = this._handleTripEventChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(destination, events) {
@@ -30,6 +35,18 @@ export default class Trip {
     this._sourcedTaskEvents = events.slice();
 
     this._renderEvents();
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._tripEventPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
+  _handleTripEventChange(updatedEvents) {
+    this._tripEvents = updateItem(this._tripEvents, updatedEvents);
+    this._sourcedTaskEvents = updateItem(this._sourcedTaskEvents, updatedEvents);
+    this._tripEventPresenter[updatedEvents.eventId].init(this._tripDestination, updatedEvents);
   }
 
   _renderEvents() {
@@ -50,7 +67,6 @@ export default class Trip {
   _sortTripEvents(sortType) {
     switch (sortType) {
       case SortType.EVENT:
-        // this._tripEvents.sort(sortTypeEvent);
         this._tripEvents = this._sourcedTaskEvents.slice();
         break;
       case SortType.TIME:
@@ -87,7 +103,16 @@ export default class Trip {
   }
 
   _clearTripEventsList() {
-    this._tripEventDaysComponent.element.innerHTML = ``;
+    Object
+      .values(this._tripEventPresenter)
+      .forEach((presenter) => presenter.destroy());
+
+    Object
+      .values(this._tripDaysStorage)
+      .forEach((day) => remove(day));
+
+    this._tripEventPresenter = {};
+    this._tripDaysStorage = {};
   }
 
   _renderTripEventDaysContainer() {
@@ -95,8 +120,9 @@ export default class Trip {
   }
 
   _renderTripEventPresenter(tripEventsListContainer, events) {
-    const tripEventPresenter = new TripEventPresenter(tripEventsListContainer);
+    const tripEventPresenter = new TripEventPresenter(tripEventsListContainer, this._handleTripEventChange, this._handleModeChange);
     tripEventPresenter.init(this._tripDestination, events);
+    this._tripEventPresenter[events.eventId] = tripEventPresenter;
   }
 
   _renderTripEventDays() {
@@ -105,8 +131,8 @@ export default class Trip {
     Object.keys(groupSeparatedEvents).forEach((oneDay, dayId) => {
       const eventDay = (formatDate) => moment(oneDay).format(formatDate);
       const tripEventsListComponent = new TripEventListView(dayId + 1, eventDay, groupSeparatedEvents[oneDay]);
-
       render(this._tripEventDaysComponent, tripEventsListComponent, InsertPosition.BEFOREEND);
+      this._tripDaysStorage[oneDay] = tripEventsListComponent;
 
       groupSeparatedEvents[oneDay].forEach((event) => {
         this._renderTripEventPresenter(tripEventsListComponent.getEventListContainer(), event);
@@ -117,6 +143,7 @@ export default class Trip {
   _renderEventsWithoutDays() {
     const tripEventsListComponent = new TripEventListView(null, null);
     render(this._tripEventDaysComponent, tripEventsListComponent, InsertPosition.BEFOREEND);
+    this._tripDaysStorage[`oneDay`] = tripEventsListComponent;
 
     this._tripEvents.forEach((event) => {
       this._renderTripEventPresenter(tripEventsListComponent.getEventListContainer(), event);
