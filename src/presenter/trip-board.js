@@ -29,9 +29,10 @@ export default class Trip {
     this._handleModeChange = this._handleModeChange.bind(this);
   }
 
-  init(destination, events) {
+  init(destination, events, offers) {
     this._tripEvents = events.slice();
     this._tripDestination = destination;
+    this._offers = offers;
     this._sourcedTaskEvents = events.slice();
 
     this._renderEvents();
@@ -46,7 +47,7 @@ export default class Trip {
   _handleTripEventChange(updatedEvents) {
     this._tripEvents = updateItem(this._tripEvents, updatedEvents);
     this._sourcedTaskEvents = updateItem(this._sourcedTaskEvents, updatedEvents);
-    this._tripEventPresenter[updatedEvents.eventId].init(this._tripDestination, updatedEvents);
+    this._tripEventPresenter[updatedEvents.eventId].init(this._tripDestination, updatedEvents, this._offers);
   }
 
   _renderEvents() {
@@ -121,7 +122,7 @@ export default class Trip {
 
   _renderTripEventPresenter(tripEventsListContainer, events) {
     const tripEventPresenter = new TripEventPresenter(tripEventsListContainer, this._handleTripEventChange, this._handleModeChange);
-    tripEventPresenter.init(this._tripDestination, events);
+    tripEventPresenter.init(this._tripDestination, events, this._offers);
     this._tripEventPresenter[events.eventId] = tripEventPresenter;
   }
 
