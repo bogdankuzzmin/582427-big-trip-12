@@ -25,14 +25,14 @@ export default class TripEvent {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(destination, event) {
+  init(destination, event, offers) {
     this._events = event;
 
     const prevTripEventComponent = this._tripEventComponent;
     const prevTripEventEditComponent = this._tripEventEditComponent;
 
     this._tripEventComponent = new TripEventView(event);
-    this._tripEventEditComponent = new TripEventEditView(destination, event);
+    this._tripEventEditComponent = new TripEventEditView(destination, event, offers);
 
     this._tripEventComponent.setEventClickHandler(this._handleEventClick);
     this._tripEventEditComponent.setEditEventClickHandler(this._handleEditEventClick);
@@ -85,6 +85,7 @@ export default class TripEvent {
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
+      this._tripEventEditComponent.reset(this._events);
       this._replaceEditToTripEvent();
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
