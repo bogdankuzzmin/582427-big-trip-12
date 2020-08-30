@@ -30,12 +30,7 @@ const generatePhotos = () => {
     .map(() => `http://picsum.photos/248/152?r=${Math.random()}`);
 };
 
-export const generateDestination = () => ({
-  description: generateDescriptionText(),
-  photos: generatePhotos(),
-});
-
-export const asd = () => {
+export const generateDestination = () => {
   return CITIES.map((city) => ({
     city,
     description: generateDescriptionText(),
