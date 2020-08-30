@@ -21,9 +21,10 @@ const createOffersTemplate = (events) => {
 };
 
 const createTripEventTemplate = (event) => {
-  const {action, city, price, startDate, endDate} = event;
+  const {action, price, startDate, endDate, destination} = event;
 
   const type = action.type;
+  const city = destination.city;
   const typeInLowerCase = type.toLowerCase();
   const preposition = event.action.preposition;
   const offers = createOffersTemplate(event.offers);
