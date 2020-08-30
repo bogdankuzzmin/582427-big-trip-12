@@ -30,10 +30,10 @@ const generateTripRoute = (events) => {
   }
 
   if (events.length > 3) {
-    return `${events[0].city} &mdash; . . . &mdash; ${events[events.length - 1].city}`;
+    return `${events[0].destination.city} &mdash; . . . &mdash; ${events[events.length - 1].destination.city}`;
   }
 
-  return events.map((event) => event.city).join(` &mdash; `);
+  return events.map((event) => event.destination.city).join(` &mdash; `);
 };
 
 const generateRouteTime = (events) => {
