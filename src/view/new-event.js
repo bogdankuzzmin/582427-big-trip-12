@@ -3,6 +3,9 @@ import {EVENT_ACTION, CITIES} from "../const.js";
 import {getPrepositon} from "../utils/event.js";
 import SmartView from "./smart.js";
 
+import flatpickr from "flatpickr";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+
 const createListOffersTemplate = (offers) => {
   if (offers === null || offers.length === 0) {
     return ``;
