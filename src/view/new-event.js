@@ -171,12 +171,12 @@ const createNewEventTemplate = (events) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(startDate).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value="${moment(startDate).format(`DD/MM/YY HH:mm`)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:mm`)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -215,6 +215,10 @@ export default class NewEvent extends SmartView {
     this._offers = offers;
     this._data = events;
     this._sourcedData = events;
+    this._datepicker = {
+      start: null,
+      end: null,
+    };
 
     this._editEventClickHandler = this._editEventClickHandler.bind(this);
     this._formEventSubmitHandler = this._formEventSubmitHandler.bind(this);
@@ -222,8 +226,10 @@ export default class NewEvent extends SmartView {
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._typeClickHandler = this._typeClickHandler.bind(this);
     this._destinationCliclHandler = this._destinationCliclHandler.bind(this);
+    this._dateChangeHandler = this._dateChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatePicker();
   }
 
   get template() {
@@ -236,6 +242,7 @@ export default class NewEvent extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatePicker();
     this.setEditEventClickHandler(this._callback.editEventClick);
     this.setFormEventSubmitHandler(this._callback.formEventSubmit);
     this.setFavoriteClickHandler(this._callback.favoriteClick);
@@ -251,6 +258,30 @@ export default class NewEvent extends SmartView {
     this.element
       .querySelector(`.event__input--destination`)
       .addEventListener(`input`, this._destinationCliclHandler);
+  }
+
+  _setDatePicker() {
+    const datapicker = Object.entries(this._datepicker);
+
+    for (let onePick of datapicker) {
+      const onePickKeys = onePick[0];
+      let onePickValues = onePick[1];
+
+      if (onePickValues) {
+        onePickValues.destroy();
+        onePickValues = null;
+      }
+
+      this._datepicker[onePickKeys] = flatpickr(
+          this.element.querySelector(`#event-${onePickKeys}-time`),
+          {
+            dateFormat: `d/m/y H:i`,
+            enableTime: true,
+            defaultDate: this._data[`${onePickKeys}Date`],
+            onChange: (evt) => this._dateChangeHandler(evt, `${onePickKeys}Date`),
+          }
+      );
+    }
   }
 
   _priceInputHandler(evt) {
@@ -292,6 +323,12 @@ export default class NewEvent extends SmartView {
     this.updateData({
       destination,
     });
+  }
+
+  _dateChangeHandler(selectedDate, keyDate) {
+    this.updateData({
+      [`${keyDate}`]: selectedDate,
+    }, true);
   }
 
   _editEventClickHandler(evt) {
