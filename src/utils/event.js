@@ -60,12 +60,10 @@ export const separateEventsIntoDays = (sortedEvents) => {
 };
 
 export const getPrepositon = (actionType) => {
-  let preposition;
+  let preposition = `to`;
 
   if (Object.values(EVENT_ACTION.activities).includes(actionType)) {
     preposition = `in`;
-  } else {
-    preposition = `to`;
   }
 
   return preposition;

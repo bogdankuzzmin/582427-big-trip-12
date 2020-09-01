@@ -21,7 +21,7 @@ export const generateEvent = (tripOffers, tripDestination) => {
     eventId,
     action: {
       type,
-      preposition: getPrepositon(),
+      preposition: getPrepositon(type),
     },
     price,
     offers,

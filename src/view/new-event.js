@@ -35,11 +35,6 @@ const createNewOfferTemplate = (offers) => {
 
 const createDestinationTemplate = (event) => {
   if (event.destination === null || event.destination.length === 0 || !event.destination.description) {
-    // event.destination = {
-    //   description: `Here is no description.`,
-    //   photos: [`http://picsum.photos/248/152?r=0.01810293968388854`],
-    // };
-
     return ``;
   }
 
