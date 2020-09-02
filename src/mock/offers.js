@@ -1,4 +1,5 @@
 import {shuffleArray, getRandomInteger} from "../utils/common.js";
+import {EVENT_ACTION} from "../const.js";
 
 const OFFERS = [`Add luggae`, `Add meal`, `Choose seats`, `Travel by train`, `Rent a car`, `Lunch in city`, `Add breakfast`, `Order Uber`];
 
@@ -12,13 +13,22 @@ const OFFER_PRICE = {
   max: 250,
 };
 
-export const generateOffers = () => {
+const getRandomOffers = () => {
   const offers = shuffleArray(OFFERS)
     .slice(0, getRandomInteger(MAX_OFFERS.min, MAX_OFFERS.max));
 
-  return offers.map((name) => ({
-    name,
-    price: getRandomInteger(OFFER_PRICE.min, OFFER_PRICE.max),
-    isChecked: Boolean(getRandomInteger(0, 1)),
+  return offers
+    .map((name) => ({
+      name,
+      price: getRandomInteger(OFFER_PRICE.min, OFFER_PRICE.max),
+      isChecked: Boolean(getRandomInteger(0, 1)),
+    }));
+};
+
+export const generateOffers = () => {
+  return EVENT_ACTION.types.map((type) => ({
+    type,
+    offers: getRandomOffers(),
   }));
 };
+

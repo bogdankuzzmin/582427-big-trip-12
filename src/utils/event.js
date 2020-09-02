@@ -1,5 +1,6 @@
 import moment from "moment";
 import {getRandomInteger} from "../utils/common.js";
+import {EVENT_ACTION} from "../const.js";
 
 export const generateDate = (maxShiftEventMinutes, startDate = null) => {
   const millisecondsShift = 1000 * 60 * maxShiftEventMinutes;
@@ -56,4 +57,14 @@ export const separateEventsIntoDays = (sortedEvents) => {
   });
 
   return days;
+};
+
+export const getPrepositon = (actionType) => {
+  let preposition = `to`;
+
+  if (Object.values(EVENT_ACTION.activities).includes(actionType)) {
+    preposition = `in`;
+  }
+
+  return preposition;
 };

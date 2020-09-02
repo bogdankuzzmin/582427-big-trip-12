@@ -1,6 +1,10 @@
 import moment from "moment";
-import {EVENT_ACTION} from "../const.js";
-import AbstractView from "./abstract.js";
+import {EVENT_ACTION, CITIES} from "../const.js";
+import {getPrepositon} from "../utils/event.js";
+import SmartView from "./smart.js";
+
+import flatpickr from "flatpickr";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const createListOffersTemplate = (offers) => {
   if (offers === null || offers.length === 0) {
@@ -32,27 +36,21 @@ const createNewOfferTemplate = (offers) => {
   }).join(``);
 };
 
-const createDestinationTemplate = (destination, event) => {
-  if (destination === null || destination.length === 0) {
-    destination = {
-      description: `Here is no description.`,
-      photos: [`http://picsum.photos/248/152?r=0.01810293968388854`],
-    };
-  }
-
-  if (event.eventId) {
+const createDestinationTemplate = (event) => {
+  if (event.destination === null || event.destination.length === 0 || !event.destination.description) {
     return ``;
   }
+
 
   return (
     `<h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">
-        ${destination.description}
+        ${event.destination.description}
       </p>
 
     <div class="event__photos-container">
       <div class="event__photos-tape">
-      ${destination.photos.map((photoURL) =>
+      ${event.destination.photos.map((photoURL) =>
       (`<img class="event__photo" src="${photoURL}" alt="Event photo">`))
       .join(``)}
       </div>
@@ -94,10 +92,16 @@ const createTypeItemTemplate = (action, countStart = 0, countEnd = 7) => {
         `<div class="event__type-item">
           <input id="event-type-${lowCaseType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
           value="${lowCaseType}">
-          <label class="event__type-label  event__type-label--${lowCaseType}" for="event-type-${lowCaseType}-1">${actionType}</label>
+          <label class="event__type-label  event__type-label--${lowCaseType}" data-type="${actionType}" for="event-type-${lowCaseType}-1">${actionType}</label>
         </div>`
       );
     }).join(``);
+};
+
+const createDestinationItemTemplate = () => {
+  return CITIES.map((city) => {
+    return `<option value="${city}"></option>`;
+  }).join(``);
 };
 
 const BLANK_EVENT = {
@@ -115,16 +119,17 @@ const BLANK_EVENT = {
   isFavorite: true,
 };
 
-const createNewEventTemplate = (destination, events) => {
-  const {action, city, price, startDate, endDate} = events;
+const createNewEventTemplate = (events) => {
+  const {action, price, startDate, endDate, destination} = events;
 
   const actionType = action.type;
   const typeInLowerCase = actionType.toLowerCase();
+  const city = destination.city;
   const actionPreposition = action.preposition;
   const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION);
   const ationActivityTemplate = createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length);
   const listOffersTemplate = createListOffersTemplate(events.offers);
-  const destinationTemplate = createDestinationTemplate(destination, events);
+  const destinationTemplate = createDestinationTemplate(events);
   const favoriteInputTemplate = createFavoriteInputTemplate(events);
   const rollupButtonTemplate = createRollupButtonTemplate(events);
 
@@ -158,10 +163,7 @@ const createNewEventTemplate = (destination, events) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
-            <option value="Saint Petersburg"></option>
+            ${createDestinationItemTemplate()}
           </datalist>
         </div>
 
@@ -169,12 +171,12 @@ const createNewEventTemplate = (destination, events) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(startDate).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value="${moment(startDate).format(`DD/MM/YY HH:mm`)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:mm`)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -205,28 +207,144 @@ const createNewEventTemplate = (destination, events) => {
   );
 };
 
-export default class NewEvent extends AbstractView {
-  constructor(destination, events) {
+export default class NewEvent extends SmartView {
+  constructor(destination, events = BLANK_EVENT, offers) {
     super();
 
     this._destination = destination;
-    this._events = events || BLANK_EVENT;
+    this._offers = offers;
+    this._data = events;
+    this._sourcedData = events;
+    this._datepicker = {
+      start: null,
+      end: null,
+    };
+
     this._editEventClickHandler = this._editEventClickHandler.bind(this);
     this._formEventSubmitHandler = this._formEventSubmitHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
+    this._typeClickHandler = this._typeClickHandler.bind(this);
+    this._destinationCliclHandler = this._destinationCliclHandler.bind(this);
+    this._dateChangeHandler = this._dateChangeHandler.bind(this);
+
+    this._setInnerHandlers();
+    this._setDatePicker();
   }
 
   get template() {
-    return createNewEventTemplate(this._destination, this._events);
+    return createNewEventTemplate(this._data);
+  }
+
+  reset(event) {
+    this.updateData(event);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setDatePicker();
+    this.setEditEventClickHandler(this._callback.editEventClick);
+    this.setFormEventSubmitHandler(this._callback.formEventSubmit);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+  }
+
+  _setInnerHandlers() {
+    this.element
+      .querySelector(`.event__input--price`)
+      .addEventListener(`input`, this._priceInputHandler);
+    this.element
+      .querySelector(`.event__type-list`)
+      .addEventListener(`click`, this._typeClickHandler);
+    this.element
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`input`, this._destinationCliclHandler);
+  }
+
+  _setDatePicker() {
+    const datapicker = Object.entries(this._datepicker);
+
+    for (let onePick of datapicker) {
+      const onePickKeys = onePick[0];
+      let onePickValues = onePick[1];
+
+      if (onePickValues) {
+        onePickValues.destroy();
+        onePickValues = null;
+      }
+
+      this._datepicker[onePickKeys] = flatpickr(
+          this.element.querySelector(`#event-${onePickKeys}-time`),
+          {
+            dateFormat: `d/m/y H:i`,
+            enableTime: true,
+            defaultDate: this._data[`${onePickKeys}Date`],
+            onChange: (evt) => this._dateChangeHandler(evt, `${onePickKeys}Date`),
+          }
+      );
+    }
+  }
+
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+
+    this.updateData({
+      price: evt.target.value
+    }, true);
+  }
+
+  _typeClickHandler(evt) {
+    evt.preventDefault();
+
+    const actionType = evt.target.dataset.type;
+    const offers = this._offers.find((it) => it.type === actionType).offers;
+
+    if (evt.target.dataset.type === this._data.action.type) {
+      this.element.querySelector(`.event__type-btn`).click();
+      return;
+    }
+
+    this.updateData({
+      action: {
+        preposition: getPrepositon(actionType),
+        type: actionType
+      },
+      offers,
+    });
+  }
+
+  _destinationCliclHandler(evt) {
+    evt.preventDefault();
+
+    const targetCity = evt.target.value;
+
+    const findCity = this._destination.find((it) => it.city === targetCity);
+    const destination = findCity ? findCity : {city: targetCity};
+
+    this.updateData({
+      destination,
+    });
+  }
+
+  _dateChangeHandler(selectedDate, keyDate) {
+    this.updateData({
+      [`${keyDate}`]: selectedDate,
+    }, true);
   }
 
   _editEventClickHandler(evt) {
     evt.preventDefault();
+    this.reset(this._sourcedData);
     this._callback.editEventClick();
   }
 
   _formEventSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.formEventSubmit();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 
   setEditEventClickHandler(callback) {
@@ -237,5 +355,10 @@ export default class NewEvent extends AbstractView {
   setFormEventSubmitHandler(callback) {
     this._callback.formEventSubmit = callback;
     this.element.addEventListener(`submit`, this._formEventSubmitHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteClickHandler);
   }
 }
