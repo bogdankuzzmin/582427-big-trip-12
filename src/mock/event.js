@@ -1,5 +1,5 @@
-import {getRandomElement, getRandomInteger} from "../utils/common.js";
-import {generateDate, getPrepositon} from "../utils/event.js";
+import {getRandomElement, getRandomInteger, shuffleArray} from "../utils/common.js";
+import {generateDate} from "../utils/event.js";
 import {EVENT_ACTION} from "../const.js";
 import randomId from "random-id";
 
@@ -19,12 +19,9 @@ export const generateEvent = (tripOffers, tripDestination) => {
 
   return {
     id,
-    action: {
-      type,
-      preposition: getPrepositon(type),
-    },
+    type,
     price,
-    offers,
+    offers: shuffleArray(offers).slice(getRandomInteger(0, 5)),
     startDate,
     endDate,
     isFavorite,

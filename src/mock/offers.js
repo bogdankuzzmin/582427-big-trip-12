@@ -21,7 +21,6 @@ const getRandomOffers = () => {
     .map((name) => ({
       name,
       price: getRandomInteger(OFFER_PRICE.min, OFFER_PRICE.max),
-      isChecked: Boolean(getRandomInteger(0, 1)),
     }));
 };
 

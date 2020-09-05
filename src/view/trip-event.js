@@ -1,31 +1,30 @@
 import moment from "moment";
 import {MAX_EVENT_OFFERS} from "../const.js";
-import {humanizeTime} from "../utils/event.js";
+import {humanizeTime, getPrepositon} from "../utils/event.js";
 import AbstractView from "./abstract.js";
 
-const createOffersTemplate = (events) => {
-  if (events.length === 0) {
+const createOffersTemplate = (offers) => {
+  if (offers.length === 0) {
     return ``;
   }
 
-  return events
-    .filter((event) => event.isChecked === true)
+  return offers
     .slice(0, MAX_EVENT_OFFERS)
-    .map((it) =>
+    .map((offer) =>
       `<li class="event__offer">
-        <span class="event__offer-title">${it.name}</span>
+        <span class="event__offer-title">${offer.name}</span>
           &plus;
-          &euro;&nbsp;<span class="event__offer-price">${it.price}</span>
+          &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
        </li>`
     ).join(``);
 };
 
 const createTripEventTemplate = (event) => {
-  const {action, price, startDate, endDate, destination} = event;
-  const type = action.type;
+  const {type, price, startDate, endDate, destination} = event;
+
   const city = destination.city;
   const typeInLowerCase = type.toLowerCase();
-  const preposition = event.action.preposition;
+  const preposition = getPrepositon(type);
   const offers = createOffersTemplate(event.offers);
   const differenceInTime = humanizeTime(startDate, endDate);
 

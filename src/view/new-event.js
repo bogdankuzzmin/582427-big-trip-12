@@ -6,7 +6,7 @@ import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
-const createListOffersTemplate = (offers) => {
+const createListOffersTemplate = (offers, isChecked) => {
   if (offers === null || offers.length === 0) {
     return ``;
   }
@@ -14,30 +14,30 @@ const createListOffersTemplate = (offers) => {
   return (
     `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-      ${createNewOfferTemplate(offers)}
+    ${offers
+        .map((offer) => createNewOfferTemplate(offer, isChecked.includes(offer)
+        )).join(``)}
     </div>`
   );
 };
 
-const createNewOfferTemplate = (offers) => {
-  return offers.map((offer) => {
-    const offerNameId = offer.name.split(` `).join(`-`).toLowerCase();
+const createNewOfferTemplate = (offer, isChecked) => {
+  const offerNameId = offer.name.split(` `).join(`-`).toLowerCase();
 
-    return (
-      `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerNameId}" type="checkbox" name="event-offer-${offerNameId}" ${offer.isChecked ? `checked` : ``}>
-        <label class="event__offer-label" for="event-offer-${offerNameId}">
-          <span class="event__offer-title">${offer.name}</span>
-          &plus;
-          &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
-        </label>
-      </div>`
-    );
-  }).join(``);
+  return (
+    `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerNameId}" type="checkbox" name="event-offer-${offerNameId}" ${isChecked ? `checked` : ``} value="${offer.name}">
+      <label class="event__offer-label" for="event-offer-${offerNameId}">
+        <span class="event__offer-title">${offer.name}</span>
+        &plus;
+        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+      </label>
+    </div>`
+  );
 };
 
 const createDestinationTemplate = (event) => {
-  if (event.destination === null || event.destination.length === 0 || !event.destination.description) {
+  if (event.destination === null || event.destination.length === 0 || !event.destination.description || !event.destination.photos) {
     return ``;
   }
 
@@ -105,33 +105,35 @@ const createDestinationItemTemplate = () => {
 };
 
 const BLANK_EVENT = {
-  action: {
-    preposition: `to`,
-    type: `Taxi`,
-  },
-  city: ``,
+  id: `1`,
+  type: `Taxi`,
   price: ``,
-  actionType: createTypeItemTemplate(EVENT_ACTION),
-  ationActivity: createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length),
   offers: [],
+  destination: {
+    city: `Valencia`,
+  },
   startTime: new Date(),
   endTime: new Date(),
   isFavorite: true,
 };
 
-const createNewEventTemplate = (events) => {
-  const {action, price, startDate, endDate, destination} = events;
+const createNewEventTemplate = (events, offers) => {
+  const {type, price, startDate, endDate, destination} = events;
 
-  const actionType = action.type;
+  const actionType = type;
   const typeInLowerCase = actionType.toLowerCase();
   const city = destination.city;
-  const actionPreposition = action.preposition;
+  const actionPreposition = getPrepositon(type);
   const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION);
   const ationActivityTemplate = createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length);
-  const listOffersTemplate = createListOffersTemplate(events.offers);
+  // const listOffersTemplate = createListOffersTemplate(events.offers);
   const destinationTemplate = createDestinationTemplate(events);
   const favoriteInputTemplate = createFavoriteInputTemplate(events);
   const rollupButtonTemplate = createRollupButtonTemplate(events);
+
+  const getOffers = offers.find((it) => it.type === actionType).offers;
+
+  const listOffersTemplate = createListOffersTemplate(getOffers, events.offers);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -228,6 +230,7 @@ export default class NewEvent extends SmartView {
     this._typeClickHandler = this._typeClickHandler.bind(this);
     this._destinationCliclHandler = this._destinationCliclHandler.bind(this);
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
+    this._offerClickHandler = this._offerClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatePicker();
@@ -246,7 +249,7 @@ export default class NewEvent extends SmartView {
   }
 
   get template() {
-    return createNewEventTemplate(this._data);
+    return createNewEventTemplate(this._data, this._offers);
   }
 
   reset(event) {
@@ -272,6 +275,11 @@ export default class NewEvent extends SmartView {
     this.element
       .querySelector(`.event__input--destination`)
       .addEventListener(`input`, this._destinationCliclHandler);
+
+    const offers = this.element.querySelector(`.event__available-offers`);
+    if (offers) {
+      offers.addEventListener(`click`, this._offerClickHandler);
+    }
   }
 
   _setDatePicker() {
@@ -312,16 +320,13 @@ export default class NewEvent extends SmartView {
     const actionType = evt.target.dataset.type;
     const offers = this._offers.find((it) => it.type === actionType).offers;
 
-    if (evt.target.dataset.type === this._data.action.type) {
+    if (evt.target.dataset.type === this._data.type) {
       this.element.querySelector(`.event__type-btn`).click();
       return;
     }
 
     this.updateData({
-      action: {
-        preposition: getPrepositon(actionType),
-        type: actionType
-      },
+      type: actionType,
       offers,
     });
   }
@@ -339,6 +344,22 @@ export default class NewEvent extends SmartView {
     }, destination === findCity ? false : true);
   }
 
+  _offerClickHandler() {
+    const checkedTitles = Array
+      .from(this.element.querySelectorAll(`.event__offer-checkbox`))
+      .filter((element) => element.checked)
+      .map((element) => element.value);
+
+    const getOffers = this._offers.find((it) => it.type === this._data.type).offers;
+    const offers = getOffers.filter((offer) => checkedTitles.includes(offer.name));
+
+
+    this.updateData({
+      offers,
+    }, true);
+
+  }
+
   _dateChangeHandler([selectedDate], keyDate) {
     this.updateData({
       [`${keyDate}`]: selectedDate,
@@ -354,6 +375,7 @@ export default class NewEvent extends SmartView {
   _formEventSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.formEventSubmit(this._data);
+    // this._offerClickHandler();
   }
 
   _favoriteClickHandler(evt) {
