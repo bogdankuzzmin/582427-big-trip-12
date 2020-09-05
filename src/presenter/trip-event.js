@@ -1,7 +1,7 @@
 import TripEventView from "../view/trip-event.js";
 import TripEventEditView from "../view/new-event.js";
 import {render, replace, remove} from "../utils/render.js";
-import {InsertPosition} from "../const.js";
+import {InsertPosition, UserAction, UpdateType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -22,6 +22,7 @@ export default class TripEvent {
     this._handleEditEventClick = this._handleEditEventClick.bind(this);
     this._handleFormEventSubmit = this._handleFormEventSubmit.bind(this);
     this._handlerFavoriteClick = this._handlerFavoriteClick.bind(this);
+    this._handleFormDeleteClick = this._handleFormDeleteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
@@ -38,6 +39,7 @@ export default class TripEvent {
     this._tripEventEditComponent.setEditEventClickHandler(this._handleEditEventClick);
     this._tripEventEditComponent.setFormEventSubmitHandler(this._handleFormEventSubmit);
     this._tripEventEditComponent.setFavoriteClickHandler(this._handlerFavoriteClick);
+    this._tripEventEditComponent.setFormDeleteClickHandler(this._handleFormDeleteClick);
 
     if (prevTripEventComponent === null || prevTripEventEditComponent === null) {
       render(this._tripEventsListContainer, this._tripEventComponent, InsertPosition.BEFOREEND);
@@ -100,12 +102,28 @@ export default class TripEvent {
     this._replaceEditToTripEvent();
   }
 
-  _handleFormEventSubmit() {
+  _handleFormEventSubmit(update) {
+    this._changeData(
+        UserAction.UPDATE_EVENT,
+        UpdateType.MAJOR,
+        update
+    );
+
     this._replaceEditToTripEvent();
+  }
+
+  _handleFormDeleteClick(event) {
+    this._changeData(
+        UserAction.DELETE_EVENT,
+        UpdateType.MAJOR,
+        event
+    );
   }
 
   _handlerFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_EVENT,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._events,

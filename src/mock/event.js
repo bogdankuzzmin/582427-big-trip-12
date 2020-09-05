@@ -8,7 +8,7 @@ const DAY_GAP = 5;
 const maxShiftStartEventMinutes = DAY_GAP * 24 * 60;
 
 export const generateEvent = (tripOffers, tripDestination) => {
-  const eventId = randomId(3);
+  const id = randomId(3);
   const type = getRandomElement(EVENT_ACTION.types);
   const offers = tripOffers.find((it) => it.type === type).offers;
   const destination = getRandomElement(tripDestination);
@@ -18,7 +18,7 @@ export const generateEvent = (tripOffers, tripDestination) => {
   const isFavorite = Boolean(getRandomInteger(0, 1));
 
   return {
-    eventId,
+    id,
     action: {
       type,
       preposition: getPrepositon(type),

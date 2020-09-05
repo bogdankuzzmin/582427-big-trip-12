@@ -1,36 +1,38 @@
 import AbstractView from "./abstract.js";
 import {SortType} from "../const.js";
 
-const createTripSortItemTemplate = () => {
+const createTripSortItemTemplate = (currentSortType) => {
   return Object.values(SortType).map((type) => {
     return (
       `<div class="trip-sort__item  trip-sort__item--${type}">
-        <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${type}" ${type === `event` ? `checked` : ``}>
+        <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${type}" ${currentSortType === type ? `checked` : ``}>
         <label class="trip-sort__btn" for="sort-${type}" data-sort-type="${type}">${type}</label>
       </div>`
     );
   }).join(``);
 };
 
-const createTripSortTemplate = () => {
+const createTripSortTemplate = (currentSortType) => {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
       <span class="trip-sort__item  trip-sort__item--day">Day</span>
-      ${createTripSortItemTemplate()}
+      ${createTripSortItemTemplate(currentSortType)}
       <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
     </form>`
   );
 };
 
 export default class TripSort extends AbstractView {
-  constructor() {
+  constructor(currentSortType) {
     super();
+
+    this._currentSortType = currentSortType;
 
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
   get template() {
-    return createTripSortTemplate();
+    return createTripSortTemplate(this._currentSortType);
   }
 
   _sortTypeChangeHandler(evt) {

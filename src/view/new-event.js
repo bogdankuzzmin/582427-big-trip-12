@@ -60,8 +60,8 @@ const createDestinationTemplate = (event) => {
 
 const createFavoriteInputTemplate = (event) => {
   return (
-    `<input id="event-${event.eventId}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${event.isFavorite ? `checked` : ``}>
-      <label class="event__favorite-btn" for="event-${event.eventId}">
+    `<input id="event-${event.id}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${event.isFavorite ? `checked` : ``}>
+      <label class="event__favorite-btn" for="event-${event.id}">
       <span class="visually-hidden">Add to favorite</span>
       <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
         <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -71,7 +71,7 @@ const createFavoriteInputTemplate = (event) => {
 };
 
 const createRollupButtonTemplate = (event) => {
-  if (event.eventId) {
+  if (event.id) {
     return (
       `<button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
@@ -188,7 +188,7 @@ const createNewEventTemplate = (events) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${events.eventId ? `Delete` : `Cancel`}</button>
+        <button class="event__reset-btn" type="reset">${events.id ? `Delete` : `Cancel`}</button>
 
         ${favoriteInputTemplate}
         ${rollupButtonTemplate}
@@ -222,6 +222,7 @@ export default class NewEvent extends SmartView {
 
     this._editEventClickHandler = this._editEventClickHandler.bind(this);
     this._formEventSubmitHandler = this._formEventSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._typeClickHandler = this._typeClickHandler.bind(this);
@@ -230,6 +231,18 @@ export default class NewEvent extends SmartView {
 
     this._setInnerHandlers();
     this._setDatePicker();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    Object.values(this._datepicker)
+      .forEach((oneDatepicker) => {
+        if (oneDatepicker) {
+          oneDatepicker.destroy();
+          oneDatepicker = null;
+        }
+      });
   }
 
   get template() {
@@ -245,6 +258,7 @@ export default class NewEvent extends SmartView {
     this._setDatePicker();
     this.setEditEventClickHandler(this._callback.editEventClick);
     this.setFormEventSubmitHandler(this._callback.formEventSubmit);
+    this.setFormDeleteClickHandler(this._callback.deleteClick);
     this.setFavoriteClickHandler(this._callback.favoriteClick);
   }
 
@@ -322,10 +336,10 @@ export default class NewEvent extends SmartView {
 
     this.updateData({
       destination,
-    });
+    }, destination === findCity ? false : true);
   }
 
-  _dateChangeHandler(selectedDate, keyDate) {
+  _dateChangeHandler([selectedDate], keyDate) {
     this.updateData({
       [`${keyDate}`]: selectedDate,
     }, true);
@@ -339,12 +353,17 @@ export default class NewEvent extends SmartView {
 
   _formEventSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formEventSubmit();
+    this._callback.formEventSubmit(this._data);
   }
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
     this._callback.favoriteClick();
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(this._data);
   }
 
   setEditEventClickHandler(callback) {
@@ -355,6 +374,11 @@ export default class NewEvent extends SmartView {
   setFormEventSubmitHandler(callback) {
     this._callback.formEventSubmit = callback;
     this.element.addEventListener(`submit`, this._formEventSubmitHandler);
+  }
+
+  setFormDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.element.querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
   setFavoriteClickHandler(callback) {

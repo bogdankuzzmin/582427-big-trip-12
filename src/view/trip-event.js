@@ -22,7 +22,6 @@ const createOffersTemplate = (events) => {
 
 const createTripEventTemplate = (event) => {
   const {action, price, startDate, endDate, destination} = event;
-
   const type = action.type;
   const city = destination.city;
   const typeInLowerCase = type.toLowerCase();
@@ -44,7 +43,7 @@ const createTripEventTemplate = (event) => {
               ${moment(startDate).format(`HH:mm`)}
             </time>
             &mdash;
-            <time class="event__end-time" datetime="${moment(startDate).format(`YYYY-MM-DDTHH:mm`)}">
+            <time class="event__end-time" datetime="${moment(endDate).format(`YYYY-MM-DDTHH:mm`)}">
               ${moment(endDate).format(`HH:mm`)}
             </time>
           </p>
