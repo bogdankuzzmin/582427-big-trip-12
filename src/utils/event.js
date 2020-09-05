@@ -68,3 +68,7 @@ export const getPrepositon = (actionType) => {
 
   return preposition;
 };
+
+export const getOffers = (offers, type) => {
+  return offers.find((it) => it.type === type).offers;
+}

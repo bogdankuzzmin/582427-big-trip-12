@@ -1,6 +1,6 @@
 import moment from "moment";
 import {EVENT_ACTION, CITIES} from "../const.js";
-import {getPrepositon} from "../utils/event.js";
+import {getPrepositon, getOffers} from "../utils/event.js";
 import SmartView from "./smart.js";
 
 import flatpickr from "flatpickr";
@@ -126,14 +126,11 @@ const createNewEventTemplate = (events, offers) => {
   const actionPreposition = getPrepositon(type);
   const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION);
   const ationActivityTemplate = createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length);
-  // const listOffersTemplate = createListOffersTemplate(events.offers);
   const destinationTemplate = createDestinationTemplate(events);
   const favoriteInputTemplate = createFavoriteInputTemplate(events);
   const rollupButtonTemplate = createRollupButtonTemplate(events);
 
-  const getOffers = offers.find((it) => it.type === actionType).offers;
-
-  const listOffersTemplate = createListOffersTemplate(getOffers, events.offers);
+  const listOffersTemplate = createListOffersTemplate(getOffers(offers, actionType), events.offers);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -275,11 +272,6 @@ export default class NewEvent extends SmartView {
     this.element
       .querySelector(`.event__input--destination`)
       .addEventListener(`input`, this._destinationCliclHandler);
-
-    const offers = this.element.querySelector(`.event__available-offers`);
-    if (offers) {
-      offers.addEventListener(`click`, this._offerClickHandler);
-    }
   }
 
   _setDatePicker() {
@@ -318,7 +310,7 @@ export default class NewEvent extends SmartView {
     evt.preventDefault();
 
     const actionType = evt.target.dataset.type;
-    const offers = this._offers.find((it) => it.type === actionType).offers;
+    const offers = getOffers(this._offers, actionType);
 
     if (evt.target.dataset.type === this._data.type) {
       this.element.querySelector(`.event__type-btn`).click();
@@ -350,8 +342,8 @@ export default class NewEvent extends SmartView {
       .filter((element) => element.checked)
       .map((element) => element.value);
 
-    const getOffers = this._offers.find((it) => it.type === this._data.type).offers;
-    const offers = getOffers.filter((offer) => checkedTitles.includes(offer.name));
+    const offers = getOffers(this._offers, this._data.type)
+                    .filter((offer) => checkedTitles.includes(offer.name));
 
 
     this.updateData({
@@ -374,8 +366,8 @@ export default class NewEvent extends SmartView {
 
   _formEventSubmitHandler(evt) {
     evt.preventDefault();
+    this._offerClickHandler();
     this._callback.formEventSubmit(this._data);
-    // this._offerClickHandler();
   }
 
   _favoriteClickHandler(evt) {

@@ -1,5 +1,5 @@
 import {getRandomElement, getRandomInteger, shuffleArray} from "../utils/common.js";
-import {generateDate} from "../utils/event.js";
+import {generateDate, getOffers} from "../utils/event.js";
 import {EVENT_ACTION} from "../const.js";
 import randomId from "random-id";
 
@@ -10,7 +10,8 @@ const maxShiftStartEventMinutes = DAY_GAP * 24 * 60;
 export const generateEvent = (tripOffers, tripDestination) => {
   const id = randomId(3);
   const type = getRandomElement(EVENT_ACTION.types);
-  const offers = tripOffers.find((it) => it.type === type).offers;
+  const offers = getOffers(tripOffers, type);
+
   const destination = getRandomElement(tripDestination);
   const price = getRandomInteger(10, 50) * 10;
   const startDate = generateDate(maxShiftStartEventMinutes);
