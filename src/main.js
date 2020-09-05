@@ -7,6 +7,7 @@ import SiteMenuPresenter from "./presenter/site-menu.js";
 
 import EventsModel from "./model/events.js";
 import OffersModel from "./model/offers.js";
+import DestinationModel from "./model/destination.js";
 
 import TripControlsView from "./view/trip-controls.js";
 import TripFilterView from "./view/trip-filter.js";
@@ -22,6 +23,8 @@ const offersModel = new OffersModel();
 offersModel.setOffers(offers);
 
 const destination = generateDestination();
+const destinationModel = new DestinationModel();
+destinationModel.setDestination(destination);
 
 const events = new Array(MAX_WAYPOINTS).fill().map(() => generateEvent(offers, destination));
 const sortedEvents = events.sort(sortTypeEvent);
@@ -42,6 +45,6 @@ render(tripControlsTitle, new TripControlsView(), InsertPosition.AFTEREND);
 render(tripControls, new TripFilterView().element, InsertPosition.BEFOREEND);
 
 const tripEventContainer = document.querySelector(`.trip-events`);
-const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel);
+const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel);
 
-tripBoardPresenter.init(destination);
+tripBoardPresenter.init();

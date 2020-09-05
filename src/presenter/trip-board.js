@@ -13,10 +13,11 @@ import TripSortView from "../view/trip-sort.js";
 import {sortTypeTime, sortTypePrice, sortTypeEvent} from "../utils/sort.js";
 
 export default class Trip {
-  constructor(tripEventContainer, eventsModel, offersModel) {
+  constructor(tripEventContainer, eventsModel, offersModel, destinationModel) {
     this._tripEventContainer = tripEventContainer;
     this._eventsModel = eventsModel;
     this._offersModel = offersModel;
+    this._destinationModel = destinationModel;
 
     this._currentSortType = SortType.EVENT;
     this._tripEventPresenter = {};
@@ -35,9 +36,7 @@ export default class Trip {
     this._eventsModel.addObserver(this._handleModelEvent);
   }
 
-  init(destination) {
-    this._tripDestination = destination;
-
+  init() {
     this._renderEvents();
   }
 
@@ -79,7 +78,7 @@ export default class Trip {
     // console.log(updateType, data);
     switch (updateType) {
       case UpdateType.PATCH:
-        this._tripEventPresenter[data.id].init(this._tripDestination, data, this._offersModel.getOffers());
+        this._tripEventPresenter[data.id].init(this._destinationModel.getDestination(), data, this._offersModel.getOffers());
         break;
       case UpdateType.MAJOR:
         this._clearTripEventsList();
@@ -153,7 +152,7 @@ export default class Trip {
 
   _renderTripEventPresenter(tripEventsListContainer, events) {
     const tripEventPresenter = new TripEventPresenter(tripEventsListContainer, this._handleViewAction, this._handleModeChange);
-    tripEventPresenter.init(this._tripDestination, events, this._offersModel.getOffers());
+    tripEventPresenter.init(this._destinationModel.getDestination(), events, this._offersModel.getOffers());
     this._tripEventPresenter[events.id] = tripEventPresenter;
   }
 
