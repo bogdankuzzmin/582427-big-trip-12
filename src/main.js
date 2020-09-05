@@ -3,9 +3,9 @@ import {render} from "./utils/render.js";
 import {sortTypeEvent} from "./utils/sort.js";
 
 import TripBoardPresenter from "./presenter/trip-board.js";
+import SiteMenuPresenter from "./presenter/site-menu.js";
 import EventsModel from "./model/events.js";
 
-import SiteMenuView from "./view/site-menu.js";
 import TripControlsView from "./view/trip-controls.js";
 import TripFilterView from "./view/trip-filter.js";
 
@@ -26,13 +26,14 @@ const eventsModel = new EventsModel();
 eventsModel.setEvents(sortedEvents);
 
 const tripMain = document.querySelector(`.trip-main`);
-
-render(tripMain, new SiteMenuView(sortedEvents).element, InsertPosition.AFTERBEGIN);
+const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel);
+siteMenuPresenter.init();
 
 const tripControls = document.querySelector(`.trip-main__trip-controls`);
 const tripControlsTitle = tripControls.querySelector(`h2`);
 
-render(tripControlsTitle, new TripControlsView().element, InsertPosition.AFTEREND);
+
+render(tripControlsTitle, new TripControlsView(), InsertPosition.AFTEREND);
 render(tripControls, new TripFilterView().element, InsertPosition.BEFOREEND);
 
 const tripEventContainer = document.querySelector(`.trip-events`);
