@@ -4,7 +4,9 @@ import {sortTypeEvent} from "./utils/sort.js";
 
 import TripBoardPresenter from "./presenter/trip-board.js";
 import SiteMenuPresenter from "./presenter/site-menu.js";
+
 import EventsModel from "./model/events.js";
+import OffersModel from "./model/offers.js";
 
 import TripControlsView from "./view/trip-controls.js";
 import TripFilterView from "./view/trip-filter.js";
@@ -16,6 +18,9 @@ import {generateOffers} from "./mock/offers.js";
 const MAX_WAYPOINTS = 6;
 
 const offers = generateOffers();
+const offersModel = new OffersModel();
+offersModel.setOffers(offers);
+
 const destination = generateDestination();
 
 const events = new Array(MAX_WAYPOINTS).fill().map(() => generateEvent(offers, destination));
@@ -37,6 +42,6 @@ render(tripControlsTitle, new TripControlsView(), InsertPosition.AFTEREND);
 render(tripControls, new TripFilterView().element, InsertPosition.BEFOREEND);
 
 const tripEventContainer = document.querySelector(`.trip-events`);
-const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel);
+const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel);
 
-tripBoardPresenter.init(destination, offers);
+tripBoardPresenter.init(destination);
