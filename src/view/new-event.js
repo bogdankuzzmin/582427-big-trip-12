@@ -302,15 +302,14 @@ export default class NewEvent extends SmartView {
     evt.preventDefault();
 
     this.updateData({
-      price: evt.target.value
+      price: Number(evt.target.value)
     }, true);
   }
 
   _typeClickHandler(evt) {
     evt.preventDefault();
 
-    const actionType = evt.target.dataset.type;
-    const offers = getOffers(this._offers, actionType);
+    const type = evt.target.dataset.type;
 
     if (evt.target.dataset.type === this._data.type) {
       this.element.querySelector(`.event__type-btn`).click();
@@ -318,8 +317,7 @@ export default class NewEvent extends SmartView {
     }
 
     this.updateData({
-      type: actionType,
-      offers,
+      type,
     });
   }
 
