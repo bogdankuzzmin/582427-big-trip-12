@@ -1,5 +1,5 @@
-import {InsertPosition} from "../const.js";
-import {render} from "../utils/render.js";
+import {InsertPosition, UpdateType} from "../const.js";
+import {render, remove} from "../utils/render.js";
 
 import SiteMenuView from "../view/site-menu.js";
 import SiteMenuPriceView from "../view/site-menu-price.js";
@@ -11,9 +11,21 @@ export default class SiteMenu {
     this._eventsModel = eventsModel;
 
     this._siteMenuComponent = null;
-    this._tripControlsComponent = null;
     this._siteMenuPriceComponent = null;
     this._siteMenuRouteComponent = null;
+
+    this._handleModelEvent = this._handleModelEvent.bind(this);
+
+    this._eventsModel.addObserver(this._handleModelEvent);
+  }
+
+  _handleModelEvent(updateType) {
+    switch (updateType) {
+      case UpdateType.MAJOR:
+        this._clearSiteMenu();
+        this.init();
+        break;
+    }
   }
 
   init() {
@@ -22,12 +34,14 @@ export default class SiteMenu {
     this._renderSiteMneuPrice();
   }
 
+  _clearSiteMenu() {
+    remove(this._siteMenuComponent);
+    remove(this._siteMenuPriceComponent);
+    remove(this._siteMenuRouteComponent);
+  }
+
   _renderSiteMenu() {
     const events = this._eventsModel.getEvents();
-
-    if (this._siteMenuComponent !== null) {
-      this._siteMenuComponent = null;
-    }
 
     this._siteMenuComponent = new SiteMenuView(events);
     render(this._siteMenuContainer, this._siteMenuComponent, InsertPosition.AFTERBEGIN);
