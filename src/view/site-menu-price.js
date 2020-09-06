@@ -1,5 +1,6 @@
 import {MAX_EVENT_OFFERS} from "../const.js";
 import AbstractView from "./abstract.js";
+
 const countPrice = (events) => {
   if (events.length === 0) {
     return `0`;
@@ -12,10 +13,8 @@ const countPrice = (events) => {
 
     return event.offers
       .slice(0, MAX_EVENT_OFFERS)
-      .filter((eventOffer) => {
-        if (eventOffer.isChecked === true) {
-          price += eventOffer.price;
-        }
+      .forEach((eventOffer) => {
+        price += eventOffer.price;
       });
   });
 

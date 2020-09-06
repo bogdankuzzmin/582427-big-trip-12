@@ -71,4 +71,4 @@ export const getPrepositon = (actionType) => {
 
 export const getOffers = (offers, type) => {
   return offers.find((it) => it.type === type).offers;
-}
+};
