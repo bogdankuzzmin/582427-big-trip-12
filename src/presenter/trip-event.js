@@ -105,7 +105,7 @@ export default class TripEvent {
   _handleFormEventSubmit(update) {
     this._changeData(
         UserAction.UPDATE_EVENT,
-        UpdateType.MAJOR,
+        UpdateType.MINOR,
         update
     );
 
@@ -115,7 +115,7 @@ export default class TripEvent {
   _handleFormDeleteClick(event) {
     this._changeData(
         UserAction.DELETE_EVENT,
-        UpdateType.MAJOR,
+        UpdateType.MINOR,
         event
     );
   }

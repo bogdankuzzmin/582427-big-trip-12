@@ -21,7 +21,7 @@ export default class SiteMenu {
 
   _handleModelEvent(updateType) {
     switch (updateType) {
-      case UpdateType.MAJOR:
+      case UpdateType.MINOR:
         this._clearSiteMenu();
         this.init();
         break;
