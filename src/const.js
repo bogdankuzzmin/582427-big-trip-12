@@ -43,7 +43,7 @@ export const SortType = {
 };
 
 export const FilterType = {
-  EVERYTHING: `default`,
+  EVERYTHING: `everything`,
   FUTURE: `future`,
   PAST: `past`,
 };
