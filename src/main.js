@@ -37,18 +37,23 @@ eventsModel.setEvents(sortedEvents);
 const filterModel = new FilterModel();
 
 const tripMain = document.querySelector(`.trip-main`);
-const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel);
-siteMenuPresenter.init();
+
 
 const tripControls = document.querySelector(`.trip-main__trip-controls`);
 const tripControlsTitle = tripControls.querySelector(`h2`);
+const tripEventContainer = document.querySelector(`.trip-events`);
 
 render(tripControlsTitle, new TripControlsView(), InsertPosition.AFTEREND);
-// render(tripControls, new TripFilterView(`everything`).element, InsertPosition.BEFOREEND);
 
-const tripEventContainer = document.querySelector(`.trip-events`);
 const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel);
 const filterPresenter = new FilterPresenter(tripControls, filterModel, eventsModel);
+const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel);
 
+siteMenuPresenter.init();
 filterPresenter.init();
 tripBoardPresenter.init();
+
+document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+  tripBoardPresenter.createTask();
+});

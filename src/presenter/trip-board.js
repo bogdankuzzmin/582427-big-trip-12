@@ -1,9 +1,10 @@
 import moment from "moment";
 import {render, remove} from "../utils/render.js";
 import {separateEventsIntoDays} from "../utils/event.js";
-import {InsertPosition, SortType, UpdateType, UserAction} from "../const.js";
+import {InsertPosition, SortType, UpdateType, UserAction, FilterType} from "../const.js";
 
 import TripEventPresenter from "./trip-event.js";
+import NewEventPresenter from "./new-event.js";
 
 import TripEventListView from "../view/trip-event-list.js";
 import TripEventDaysView from "../view/trip-event-days.js";
@@ -37,10 +38,18 @@ export default class Trip {
 
     this._eventsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._newEventPresenter = new NewEventPresenter(this._tripEventContainer, this._handleViewAction);
   }
 
   init() {
     this._renderEvents();
+  }
+
+  createTask() {
+    this._currentSortType = SortType.EVENT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._newEventPresenter.init(this._destinationModel.getDestination(), null, this._offersModel.getOffers());
   }
 
   _getEvents() {
@@ -61,6 +70,8 @@ export default class Trip {
   }
 
   _handleModeChange() {
+    this._newEventPresenter.destroy();
+
     Object
       .values(this._tripEventPresenter)
       .forEach((presenter) => presenter.resetView());
@@ -141,6 +152,8 @@ export default class Trip {
   }
 
   _clearTripEventsList({resetSortType = false} = {}) {
+    this._newEventPresenter.destroy();
+
     Object
       .values(this._tripEventPresenter)
       .forEach((presenter) => presenter.destroy());
