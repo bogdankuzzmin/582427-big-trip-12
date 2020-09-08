@@ -25,8 +25,4 @@ export default class Abstract {
   removeElement() {
     this._element = null;
   }
-
-  asd() {
-    console.log(`1111`);
-  }
 }
