@@ -1,4 +1,5 @@
 import moment from "moment";
+import he from "he";
 import {MAX_EVENT_OFFERS} from "../const.js";
 import {humanizeTime, getPrepositon} from "../utils/event.js";
 import AbstractView from "./abstract.js";
@@ -34,7 +35,7 @@ const createTripEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${typeInLowerCase}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${preposition} ${city}</h3>
+        <h3 class="event__title">${type} ${preposition} ${he.encode(city)}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
