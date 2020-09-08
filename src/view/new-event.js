@@ -6,6 +6,18 @@ import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
+const BLANK_EVENT = {
+  type: `Taxi`,
+  price: 0,
+  offers: [],
+  destination: {
+    city: ``,
+  },
+  startTime: new Date(),
+  endTime: new Date(),
+  isFavorite: true,
+};
+
 const createListOffersTemplate = (offers, isChecked) => {
   if (offers === null || offers.length === 0) {
     return ``;
@@ -59,6 +71,10 @@ const createDestinationTemplate = (event) => {
 };
 
 const createFavoriteInputTemplate = (event) => {
+  if (!event.id) {
+    return ``;
+  }
+
   return (
     `<input id="event-${event.id}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${event.isFavorite ? `checked` : ``}>
       <label class="event__favorite-btn" for="event-${event.id}">
@@ -71,15 +87,16 @@ const createFavoriteInputTemplate = (event) => {
 };
 
 const createRollupButtonTemplate = (event) => {
-  if (event.id) {
-    return (
-      `<button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>`
-    );
+  if (!event.id) {
+    return ``;
   }
 
-  return ``;
+  return (
+    `<button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>`
+  );
+
 };
 
 const createTypeItemTemplate = (action, countStart = 0, countEnd = 7) => {
@@ -104,21 +121,9 @@ const createDestinationItemTemplate = () => {
   }).join(``);
 };
 
-const BLANK_EVENT = {
-  id: `1`,
-  type: `Taxi`,
-  price: ``,
-  offers: [],
-  destination: {
-    city: `Valencia`,
-  },
-  startTime: new Date(),
-  endTime: new Date(),
-  isFavorite: true,
-};
-
 const createNewEventTemplate = (events, offers) => {
   const {type, price, startDate, endDate, destination} = events;
+
 
   const actionType = type;
   const typeInLowerCase = actionType.toLowerCase();
@@ -183,7 +188,7 @@ const createNewEventTemplate = (events, offers) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -207,12 +212,12 @@ const createNewEventTemplate = (events, offers) => {
 };
 
 export default class NewEvent extends SmartView {
-  constructor(destination, events = BLANK_EVENT, offers) {
+  constructor(destination, events, offers) {
     super();
 
     this._destination = destination;
     this._offers = offers;
-    this._data = events;
+    this._data = events || BLANK_EVENT;
     this._sourcedData = events;
     this._datepicker = {
       start: null,
@@ -256,10 +261,16 @@ export default class NewEvent extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this._setDatePicker();
-    this.setEditEventClickHandler(this._callback.editEventClick);
     this.setFormEventSubmitHandler(this._callback.formEventSubmit);
     this.setFormDeleteClickHandler(this._callback.deleteClick);
-    this.setFavoriteClickHandler(this._callback.favoriteClick);
+
+    if (this._callback.favoriteClick) {
+      this.setFavoriteClickHandler(this._callback.favoriteClick);
+    }
+
+    if (this._callback.editEventClick) {
+      this.setEditEventClickHandler(this._callback.editEventClick);
+    }
   }
 
   _setInnerHandlers() {
@@ -302,7 +313,7 @@ export default class NewEvent extends SmartView {
     evt.preventDefault();
 
     this.updateData({
-      price: Number(evt.target.value)
+      price: Number(evt.target.value),
     }, true);
   }
 
@@ -331,7 +342,8 @@ export default class NewEvent extends SmartView {
 
     this.updateData({
       destination,
-    }, destination === findCity ? false : true);
+    }, destination.description === this._data.destination.description);
+
   }
 
   _offerClickHandler() {
