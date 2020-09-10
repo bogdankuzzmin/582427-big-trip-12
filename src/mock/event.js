@@ -1,16 +1,17 @@
-import {getRandomElement, getRandomInteger} from "../utils/common.js";
-import {generateDate, getPrepositon} from "../utils/event.js";
+import {getRandomElement, getRandomInteger, shuffleArray} from "../utils/common.js";
+import {generateDate, getOffers} from "../utils/event.js";
 import {EVENT_ACTION} from "../const.js";
 import randomId from "random-id";
 
-const MAX_SHIFT_EVENT_MINUTES = 150;
+const MAX_SHIFT_EVENT_MINUTES = 60 * 48;
 const DAY_GAP = 5;
-const maxShiftStartEventMinutes = DAY_GAP * 24 * 60;
 
 export const generateEvent = (tripOffers, tripDestination) => {
-  const eventId = randomId(3);
+  const maxShiftStartEventMinutes = getRandomInteger(-DAY_GAP, DAY_GAP) * 24 * 60;
+
+  const id = randomId(3);
   const type = getRandomElement(EVENT_ACTION.types);
-  const offers = tripOffers.find((it) => it.type === type).offers;
+  const offers = getOffers(tripOffers, type);
   const destination = getRandomElement(tripDestination);
   const price = getRandomInteger(10, 50) * 10;
   const startDate = generateDate(maxShiftStartEventMinutes);
@@ -18,13 +19,10 @@ export const generateEvent = (tripOffers, tripDestination) => {
   const isFavorite = Boolean(getRandomInteger(0, 1));
 
   return {
-    eventId,
-    action: {
-      type,
-      preposition: getPrepositon(type),
-    },
+    id,
+    type,
     price,
-    offers,
+    offers: shuffleArray(offers).slice(getRandomInteger(0, 5)),
     startDate,
     endDate,
     isFavorite,
