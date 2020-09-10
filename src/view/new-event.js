@@ -14,8 +14,8 @@ const BLANK_EVENT = {
   destination: {
     city: ``,
   },
-  startTime: new Date(),
-  endTime: new Date(),
+  startDate: new Date(),
+  endDate: new Date(),
   isFavorite: true,
 };
 
