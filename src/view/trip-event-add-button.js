@@ -18,6 +18,10 @@ export default class TripEventAddButton extends AbstractView {
     return createTripEventAddButton();
   }
 
+  setAddButtonDisabled(toggle) {
+    this.element.disabled = toggle;
+  }
+
   _addButtonClickHandler(evt) {
     evt.preventDefault();
     this._callback.addButtonClick(evt.target.dataset.control);
