@@ -1,4 +1,4 @@
-import {InsertPosition} from "./const.js";
+import {InsertPosition, MenuItem} from "./const.js";
 import {render} from "./utils/render.js";
 import {sortTypeEvent} from "./utils/sort.js";
 
@@ -12,6 +12,7 @@ import DestinationModel from "./model/destination.js";
 import FilterModel from "./model/filter.js";
 
 import TripControlsView from "./view/trip-controls.js";
+import TripeventAddButtonView from "./view/trip-event-add-button.js";
 
 import {generateEvent} from "./mock/event.js";
 import {generateDestination} from "./mock/destination.js";
@@ -43,17 +44,41 @@ const tripControls = document.querySelector(`.trip-main__trip-controls`);
 const tripControlsTitle = tripControls.querySelector(`h2`);
 const tripEventContainer = document.querySelector(`.trip-events`);
 
-render(tripControlsTitle, new TripControlsView(), InsertPosition.AFTEREND);
+const tripControlsComponent = new TripControlsView();
+render(tripControlsTitle, tripControlsComponent, InsertPosition.AFTEREND);
 
 const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel);
 const filterPresenter = new FilterPresenter(tripControls, filterModel, eventsModel);
 const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel);
 
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.ADD_EVENT:
+      tripBoardPresenter.createTask();
+      // Скрыть статистику
+      // Показать доску
+      // Показать форму добавления новой задачи
+      // Убрать выделение с ADD NEW TASK после сохранения
+      break;
+    case MenuItem.EVENTS:
+      // Показать доску
+      // Скрыть статистику
+      break;
+    case MenuItem.STATS:
+
+      // Скрыть доску
+      // Показать статистику
+      break;
+  }
+};
+
+tripControlsComponent.setMenuClickHandler(handleSiteMenuClick);
+
 siteMenuPresenter.init();
 filterPresenter.init();
 tripBoardPresenter.init();
 
-document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
-  evt.preventDefault();
-  tripBoardPresenter.createTask();
-});
+const tripEventAddButton = new TripeventAddButtonView();
+render(tripMain, tripEventAddButton, InsertPosition.BEFOREEND);
+
+tripEventAddButton.setAddButtonClickHandler(handleSiteMenuClick);
