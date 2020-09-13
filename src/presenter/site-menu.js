@@ -1,5 +1,6 @@
 import {InsertPosition, UpdateType} from "../const.js";
 import {render, remove} from "../utils/render.js";
+import {sortTypeEvent} from "../utils/sort.js";
 
 import SiteMenuView from "../view/site-menu.js";
 import SiteMenuPriceView from "../view/site-menu-price.js";
@@ -29,9 +30,11 @@ export default class SiteMenu {
   }
 
   init() {
+    const events = this._eventsModel.getEvents().sort(sortTypeEvent);
+
     this._renderSiteMenu();
-    this._renderSiteMenuRoute();
-    this._renderSiteMneuPrice();
+    this._renderSiteMenuRoute(events);
+    this._renderSiteMneuPrice(events);
   }
 
   _clearSiteMenu() {
@@ -41,22 +44,16 @@ export default class SiteMenu {
   }
 
   _renderSiteMenu() {
-    const events = this._eventsModel.getEvents();
-
-    this._siteMenuComponent = new SiteMenuView(events);
+    this._siteMenuComponent = new SiteMenuView();
     render(this._siteMenuContainer, this._siteMenuComponent, InsertPosition.AFTERBEGIN);
   }
 
-  _renderSiteMenuRoute() {
-    const events = this._eventsModel.getEvents();
-
+  _renderSiteMenuRoute(events) {
     this._siteMenuRouteComponent = new SiteMenuRouteView(events);
     render(this._siteMenuComponent, this._siteMenuRouteComponent, InsertPosition.AFTERBEGIN);
   }
 
-  _renderSiteMneuPrice() {
-    const events = this._eventsModel.getEvents();
-
+  _renderSiteMneuPrice(events) {
     this._siteMenuPriceComponent = new SiteMenuPriceView(events);
     render(this._siteMenuRouteComponent, this._siteMenuPriceComponent, InsertPosition.AFTEREND);
   }
