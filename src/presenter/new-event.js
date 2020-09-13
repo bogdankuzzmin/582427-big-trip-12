@@ -9,6 +9,7 @@ export default class NewEvent {
     this._tripEventsListContainer = tripEventsListContainer;
     this._changeData = changeData;
 
+    this._destroyCallback = null;
     this._tripEventEditComponent = null;
 
     this._handleFormEventSubmit = this._handleFormEventSubmit.bind(this);
@@ -16,7 +17,9 @@ export default class NewEvent {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(destinations, events, offers) {
+  init(destinations, events, offers, callback) {
+    this._destroyCallback = callback;
+
     if (this._tripEventEditComponent !== null) {
       return;
     }
@@ -35,6 +38,10 @@ export default class NewEvent {
       return;
     }
 
+    if (this._destroyCallback !== null) {
+      this._destroyCallback();
+    }
+
     remove(this._tripEventEditComponent);
     this._tripEventEditComponent = null;
 
@@ -45,7 +52,7 @@ export default class NewEvent {
     this._changeData(
         UserAction.ADD_EVENT,
         UpdateType.MINOR,
-        Object.assign({id: randomId(5)}, event)
+        Object.assign({id: randomId(3)}, event)
     );
 
     this.destroy();
