@@ -63,6 +63,7 @@ export default class TripControls {
 
       case MenuItem.EVENTS:
         remove(this._statsComponent);
+        this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
         this._tripBordPresenter.init();
         this._tripControlsComponent.setMenuItem(menuItem);
         break;
