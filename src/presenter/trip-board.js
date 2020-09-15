@@ -1,7 +1,7 @@
 import moment from "moment";
 import {render, remove} from "../utils/render.js";
 import {separateEventsIntoDays} from "../utils/event.js";
-import {InsertPosition, SortType, UpdateType, UserAction, FilterType} from "../const.js";
+import {InsertPosition, SortType, UpdateType, UserAction} from "../const.js";
 
 import TripEventPresenter from "./trip-event.js";
 import NewEventPresenter from "./new-event.js";
@@ -17,12 +17,14 @@ import {filter} from "../utils/filter.js";
 export default class Trip {
   constructor(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel) {
     this._tripEventContainer = tripEventContainer;
+
     this._eventsModel = eventsModel;
     this._offersModel = offersModel;
     this._destinationModel = destinationModel;
     this._filterModel = filterModel;
 
     this._currentSortType = SortType.EVENT;
+
     this._tripEventPresenter = {};
     this._tripDaysStorage = {};
 
@@ -36,20 +38,25 @@ export default class Trip {
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
 
-    this._eventsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
-
     this._newEventPresenter = new NewEventPresenter(this._tripEventContainer, this._handleViewAction);
   }
 
   init() {
+    this._eventsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderEvents();
   }
 
-  createTask() {
-    this._currentSortType = SortType.EVENT;
-    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._newEventPresenter.init(this._destinationModel.getDestination(), null, this._offersModel.getOffers());
+  destroy() {
+    this._clearTripEventsList({resetSortType: true});
+
+    this._eventsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
+
+  createTask(destroyCallback) {
+    this._newEventPresenter.init(this._destinationModel.getDestination(), null, this._offersModel.getOffers(), destroyCallback);
   }
 
   _getEvents() {
@@ -78,7 +85,6 @@ export default class Trip {
   }
 
   _handleViewAction(actionType, updateType, update) {
-    // console.log(actionType, updateType, update);
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
         this._eventsModel.updateEvent(updateType, update);
@@ -93,7 +99,6 @@ export default class Trip {
   }
 
   _handleModelEvent(updateType, data) {
-    // console.log(updateType, data);
     switch (updateType) {
       case UpdateType.PATCH:
         this._tripEventPresenter[data.id].init(this._destinationModel.getDestination(), data, this._offersModel.getOffers());

@@ -9,9 +9,6 @@ export const EVENT_ACTION = {
     `Transport`,
     `Drive`,
     `Flight`,
-    `Check-in`,
-    `Sightseeing`,
-    `Restaurant`,
   ],
   activities: [
     `Check-in`,
@@ -19,6 +16,21 @@ export const EVENT_ACTION = {
     `Restaurant`,
   ],
 };
+
+export const typeToEmoji = {
+  'TAXI': `🚕`,
+  'BUS': `🚌`,
+  'TRAIN': `🚂`,
+  'SHIP': `🛳`,
+  'TRANSPORT': `🚊`,
+  'DRIVE': `🚗`,
+  'FLIGHT': `✈️`,
+  'CHECK-IN': `🏨`,
+  'SIGHTSEEING': `🏛`,
+  'RESTAURANT': `🍴`,
+};
+
+export const eventTypes = EVENT_ACTION.types.concat(EVENT_ACTION.activities);
 
 export const CITIES = [
   `Hawaii`,
@@ -58,4 +70,10 @@ export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
   MAJOR: `MAJOR`
+};
+
+export const MenuItem = {
+  ADD_EVENT: `add-event`,
+  EVENTS: `table`,
+  STATS: `stats`
 };
