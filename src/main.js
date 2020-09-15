@@ -40,7 +40,7 @@ const tripEventContainer = document.querySelector(`.trip-events`);
 const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel);
 const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel, eventsModel);
 const tripControlsPresenter = new TripControlsPresenter(tripControlsContainer, tripEventContainer, tripMain, tripBoardPresenter, eventsModel, filterModel);
-const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel);
+const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel, filterModel);
 
 filterPresenter.init();
 tripBoardPresenter.init();
