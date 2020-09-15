@@ -100,9 +100,8 @@ const createRollupButtonTemplate = (event) => {
 
 };
 
-const createTypeItemTemplate = (action, countStart = 0, countEnd = 7) => {
-  return action.types
-    .slice(countStart, countEnd)
+const createTypeItemTemplate = (action) => {
+  return action
     .map((actionType) => {
       const lowCaseType = actionType.toLowerCase();
 
@@ -130,8 +129,8 @@ const createNewEventTemplate = (events, offers) => {
   const typeInLowerCase = actionType.toLowerCase();
   const city = destination.city;
   const actionPreposition = getPrepositon(type);
-  const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION);
-  const ationActivityTemplate = createTypeItemTemplate(EVENT_ACTION, 7, EVENT_ACTION.types.length);
+  const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION.types);
+  const ationActivityTemplate = createTypeItemTemplate(EVENT_ACTION.activities);
   const destinationTemplate = createDestinationTemplate(events);
   const favoriteInputTemplate = createFavoriteInputTemplate(events);
   const rollupButtonTemplate = createRollupButtonTemplate(events);
