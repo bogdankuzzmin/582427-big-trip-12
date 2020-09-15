@@ -1,4 +1,4 @@
-import {InsertPosition, SortType} from "../const.js";
+import {InsertPosition} from "../const.js";
 import {render, remove} from "../utils/render.js";
 import {sortTypeEvent} from "../utils/sort.js";
 import {filter} from "../utils/filter.js";

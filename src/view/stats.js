@@ -1,160 +1,76 @@
-import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import Chart from 'chart.js';
+import moment from "moment";
+
+import {EVENT_ACTION, typeToEmoji} from "../const.js";
 import AbstractView from "./abstract.js";
 
-const BAR_HEIGHT = 55;
-
-const renderMoneyChart = (moneyCtx) => {
-  moneyCtx.height = BAR_HEIGHT * 6;
-
-  return new Chart(moneyCtx, {
-    plugins: [ChartDataLabels],
-    type: `horizontalBar`,
-    data: {
-      labels: [`✈️ FLY`, `???? STAY`, `???? DRIVE`, `????️ LOOK`, `???? EAT`, `???? RIDE`],
-      datasets: [{
-        data: [400, 300, 200, 160, 150, 100],
-        backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
-        anchor: `start`
-      }]
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13
-          },
-          color: `#000000`,
-          anchor: `end`,
-          align: `start`,
-          formatter: (val) => `€ ${val}`
-        }
-      },
-      title: {
-        display: true,
-        text: `MONEY`,
-        fontColor: `#000000`,
-        fontSize: 23,
-        position: `left`
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: `#000000`,
-            padding: 5,
-            fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          minBarLength: 50
-        }],
-      },
-      legend: {
-        display: false
-      },
-      tooltips: {
-        enabled: false,
-      }
-    }
-  });
+const BAR_HEIGHT = 45;
+const ChartType = {
+  MONEY: `MONEY`,
+  TRANSPORT: `TRANSPORT`,
+  TIME_SPENT: `TIME SPENT`,
 };
 
-const renderTransportChart = (transportCtx) => {
-  transportCtx.height = BAR_HEIGHT * 4;
+const renderChart = (chartCtx, chartType, events) => {
+  let chartFormat = ``;
+  const chartData = {};
 
-  return new Chart(transportCtx, {
-    plugins: [ChartDataLabels],
-    type: `horizontalBar`,
-    data: {
-      labels: [`???? DRIVE`, `???? RIDE`, `✈️ FLY`, `????️ SAIL`],
-      datasets: [{
-        data: [4, 3, 2, 1],
-        backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
-        anchor: `start`
-      }]
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13
-          },
-          color: `#000000`,
-          anchor: `end`,
-          align: `start`,
-          formatter: (val) => `${val}x`
-        }
-      },
-      title: {
-        display: true,
-        text: `TRANSPORT`,
-        fontColor: `#000000`,
-        fontSize: 23,
-        position: `left`
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: `#000000`,
-            padding: 5,
-            fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          minBarLength: 50
-        }],
-      },
-      legend: {
-        display: false
-      },
-      tooltips: {
-        enabled: false,
-      }
+  const filteredEvents = events
+    .slice()
+    .filter((it) =>
+      Object.values(EVENT_ACTION.types).includes(it.type));
+
+  const isTransport = chartType === ChartType.TRANSPORT ? filteredEvents : events;
+
+  isTransport.forEach((event) => {
+    const eventType = event.type.toUpperCase();
+
+    if (!chartData[eventType]) {
+      chartData[eventType] = {
+        eventType,
+        number: 0
+      };
+    }
+
+    switch (chartType) {
+      case ChartType.MONEY:
+        chartData[eventType].number += event.price;
+        break;
+      case ChartType.TRANSPORT:
+        chartFormat = `x`;
+        chartData[eventType].number++;
+        break;
+      case ChartType.TIME_SPENT:
+        const startMoment = moment(event.startDate);
+        const finishMoment = moment(event.endDate);
+        const timeDiff = moment.duration(finishMoment.diff(startMoment));
+        const millisecondsHours = 3600000;
+
+        chartFormat = `H`;
+        chartData[eventType].number += Math.round(timeDiff / millisecondsHours);
+        break;
     }
   });
-};
 
-const renderTimeChart = (timeSpendCtx) => {
-  timeSpendCtx.height = BAR_HEIGHT * 4;
+  const sortedData = Object.entries(chartData).sort((a, b) => b[1].number - a[1].number);
 
-  return new Chart(timeSpendCtx, {
+  chartCtx.height = BAR_HEIGHT * Object.keys(chartData).length;
+
+  return new Chart(chartCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: [`???? DRIVE`, `???? RIDE`, `✈️ FLY`, `????️ SAIL`],
+      labels: sortedData.map((data) => `${typeToEmoji[data[0]]} ${data[0]}`),
       datasets: [{
-        data: [4, 3, 2, 1],
+        data: sortedData.map((data) => data[1].number),
         backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
-        anchor: `start`
+        hoverBackgroundColor: `#9cd4fc`,
+        anchor: `start`,
+        borderWidth: 1,
+        borderColor: `#078ff0`,
+        borderSkipped: `none`,
+        minBarLength: 50,
       }]
     },
     options: {
@@ -166,12 +82,12 @@ const renderTimeChart = (timeSpendCtx) => {
           color: `#000000`,
           anchor: `end`,
           align: `start`,
-          formatter: (val) => `${val}H`
+          formatter: (val) => `${chartType === ChartType.MONEY ? `€` : ``} ${val}${chartFormat}`
         }
       },
       title: {
         display: true,
-        text: `TIME SPENT`,
+        text: chartType,
         fontColor: `#000000`,
         fontSize: 23,
         position: `left`
@@ -253,9 +169,9 @@ export default class Stats extends AbstractView {
     const transportCtx = this.element.querySelector(`.statistics__chart--transport`);
     const timeSpendCtx = this.element.querySelector(`.statistics__chart--time`);
 
-    this._moneyChart = renderMoneyChart(moneyCtx, this._tripEvents);
-    this._transportChart = renderTransportChart(transportCtx, this._tripEvents);
-    this._timeSpendCtx = renderTimeChart(timeSpendCtx, this._tripEvents);
+    this._moneyChart = renderChart(moneyCtx, ChartType.MONEY, this._events);
+    this._transportChart = renderChart(transportCtx, ChartType.TRANSPORT, this._events);
+    this._timeSpendCtx = renderChart(timeSpendCtx, ChartType.TIME_SPENT, this._events);
   }
 }
 

@@ -17,6 +17,19 @@ export const EVENT_ACTION = {
   ],
 };
 
+export const typeToEmoji = {
+  'TAXI': `🚕`,
+  'BUS': `🚌`,
+  'TRAIN': `🚂`,
+  'SHIP': `🛳`,
+  'TRANSPORT': `🚊`,
+  'DRIVE': `🚗`,
+  'FLIGHT': `✈️`,
+  'CHECK-IN': `🏨`,
+  'SIGHTSEEING': `🏛`,
+  'RESTAURANT': `🍴`,
+};
+
 export const eventTypes = EVENT_ACTION.types.concat(EVENT_ACTION.activities);
 
 export const CITIES = [
