@@ -20,7 +20,7 @@ const generateRouteTime = (events) => {
 
   const firstDay = moment(events[0].startDate).format(`MMM DD`);
   const eventsLength = events.length - 1;
-  const lastDay = moment(events[eventsLength].startDate).format(`DD`);
+  const lastDay = moment(events[eventsLength].startDate).format(`MMM DD`);
 
   return `<p class="trip-info__dates">${firstDay}&nbsp;&mdash;&nbsp;${lastDay}</p>`;
 };

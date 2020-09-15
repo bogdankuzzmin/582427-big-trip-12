@@ -1,4 +1,4 @@
-import {InsertPosition, UpdateType} from "../const.js";
+import {InsertPosition, SortType} from "../const.js";
 import {render, remove} from "../utils/render.js";
 import {sortTypeEvent} from "../utils/sort.js";
 import {filter} from "../utils/filter.js";
@@ -31,7 +31,7 @@ export default class SiteMenu {
   init() {
     const filterType = this._filterModel.getFilter();
     const events = this._eventsModel.getEvents();
-    const filteredEvents = filter[filterType](events);
+    const filteredEvents = filter[filterType](events).sort(sortTypeEvent);
 
     this._renderSiteMenu();
     this._renderSiteMenuRoute(filteredEvents);
