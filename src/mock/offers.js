@@ -1,5 +1,5 @@
 import {shuffleArray, getRandomInteger} from "../utils/common.js";
-import {EVENT_ACTION} from "../const.js";
+import {eventTypes} from "../const.js";
 
 const OFFERS = [`Add luggae`, `Add meal`, `Choose seats`, `Travel by train`, `Rent a car`, `Lunch in city`, `Add breakfast`, `Order Uber`];
 
@@ -25,7 +25,7 @@ const getRandomOffers = () => {
 };
 
 export const generateOffers = () => {
-  return EVENT_ACTION.types.map((type) => ({
+  return eventTypes.map((type) => ({
     type,
     offers: getRandomOffers(),
   }));

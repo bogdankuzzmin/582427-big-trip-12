@@ -9,9 +9,6 @@ export const EVENT_ACTION = {
     `Transport`,
     `Drive`,
     `Flight`,
-    `Check-in`,
-    `Sightseeing`,
-    `Restaurant`,
   ],
   activities: [
     `Check-in`,
@@ -19,6 +16,8 @@ export const EVENT_ACTION = {
     `Restaurant`,
   ],
 };
+
+export const eventTypes = EVENT_ACTION.types.concat(EVENT_ACTION.activities);
 
 export const CITIES = [
   `Hawaii`,
