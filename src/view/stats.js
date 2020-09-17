@@ -4,6 +4,7 @@ import moment from "moment";
 
 import {EVENT_ACTION, typeToEmoji} from "../const.js";
 import AbstractView from "./abstract.js";
+import {capitalizeFirstLetter} from "../utils/common.js";
 
 const BAR_HEIGHT = 45;
 const ChartType = {
@@ -18,8 +19,10 @@ const renderChart = (chartCtx, chartType, events) => {
 
   const filteredEvents = events
     .slice()
-    .filter((it) =>
-      Object.values(EVENT_ACTION.types).includes(it.type));
+    .filter((event) => {
+      const type = capitalizeFirstLetter(event.type);
+      return Object.values(EVENT_ACTION.types).includes(type);
+    });
 
   const isTransport = chartType === ChartType.TRANSPORT ? filteredEvents : events;
 
