@@ -1,14 +1,15 @@
 import moment from "moment";
 import he from "he";
-import {EVENT_ACTION, CITIES} from "../const.js";
+import {EVENT_ACTION} from "../const.js";
 import {getPrepositon, getOffers} from "../utils/event.js";
+import {capitalizeFirstLetter} from "../utils/common.js";
 import SmartView from "./smart.js";
 
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
-  type: `Taxi`,
+  type: `taxi`,
   price: 0,
   offers: [],
   destination: {
@@ -28,20 +29,23 @@ const createListOffersTemplate = (offers, isChecked) => {
     `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
     ${offers
-        .map((offer) => createNewOfferTemplate(offer, isChecked.includes(offer)
+        .map((offer) => createNewOfferTemplate(
+            offer,
+            isChecked.some((it) => it.title === offer.title)
         )).join(``)}
     </div>`
   );
 };
 
 const createNewOfferTemplate = (offer, isChecked) => {
-  const offerNameId = offer.name.split(` `).join(`-`).toLowerCase();
+  const offerNameId = offer.title.split(` `).join(`-`).toLowerCase();
+
 
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerNameId}" type="checkbox" name="event-offer-${offerNameId}" ${isChecked ? `checked` : ``} value="${offer.name}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerNameId}" type="checkbox" name="event-offer-${offerNameId}" ${isChecked ? `checked` : ``} value="${offer.title}">
       <label class="event__offer-label" for="event-offer-${offerNameId}">
-        <span class="event__offer-title">${offer.name}</span>
+        <span class="event__offer-title">${offer.title}</span>
         &plus;
         &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
       </label>
@@ -54,7 +58,6 @@ const createDestinationTemplate = (event) => {
     return ``;
   }
 
-
   return (
     `<h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">
@@ -64,7 +67,7 @@ const createDestinationTemplate = (event) => {
     <div class="event__photos-container">
       <div class="event__photos-tape">
       ${event.destination.photos.map((photoURL) =>
-      (`<img class="event__photo" src="${photoURL}" alt="Event photo">`))
+      (`<img class="event__photo" src="${photoURL.src}" alt="${photoURL.description}">`))
       .join(``)}
       </div>
     </div>`
@@ -100,7 +103,7 @@ const createRollupButtonTemplate = (event) => {
 
 };
 
-const createTypeItemTemplate = (action) => {
+const createTypeItemTemplate = (action, currentType) => {
   return action
     .map((actionType) => {
       const lowCaseType = actionType.toLowerCase();
@@ -108,29 +111,27 @@ const createTypeItemTemplate = (action) => {
       return (
         `<div class="event__type-item">
           <input id="event-type-${lowCaseType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
-          value="${lowCaseType}">
-          <label class="event__type-label  event__type-label--${lowCaseType}" data-type="${actionType}" for="event-type-${lowCaseType}-1">${actionType}</label>
+          value="${lowCaseType}" ${currentType === lowCaseType ? `checked` : ``}>
+          <label class="event__type-label  event__type-label--${lowCaseType}" data-type="${lowCaseType}" for="event-type-${lowCaseType}-1">${actionType}</label>
         </div>`
       );
     }).join(``);
 };
 
-const createDestinationItemTemplate = () => {
-  return CITIES.map((city) => {
-    return `<option value="${city}"></option>`;
+const createDestinationItemTemplate = (destinations) => {
+  return destinations.map((destination) => {
+    return `<option value="${destination.city}"></option>`;
   }).join(``);
 };
 
-const createNewEventTemplate = (events, offers) => {
+const createNewEventTemplate = (events, destinations, offers) => {
   const {type, price, startDate, endDate, destination} = events;
 
-
   const actionType = type;
-  const typeInLowerCase = actionType.toLowerCase();
   const city = destination.city;
   const actionPreposition = getPrepositon(type);
-  const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION.types);
-  const ationActivityTemplate = createTypeItemTemplate(EVENT_ACTION.activities);
+  const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION.types, type);
+  const ationActivityTemplate = createTypeItemTemplate(EVENT_ACTION.activities, type);
   const destinationTemplate = createDestinationTemplate(events);
   const favoriteInputTemplate = createFavoriteInputTemplate(events);
   const rollupButtonTemplate = createRollupButtonTemplate(events);
@@ -143,7 +144,7 @@ const createNewEventTemplate = (events, offers) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${typeInLowerCase}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -163,11 +164,11 @@ const createNewEventTemplate = (events, offers) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${actionType} ${actionPreposition}
+            ${capitalizeFirstLetter(type)} ${actionPreposition}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(city)}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${createDestinationItemTemplate()}
+            ${createDestinationItemTemplate(destinations)}
           </datalist>
         </div>
 
@@ -251,7 +252,7 @@ export default class NewEvent extends SmartView {
   }
 
   get template() {
-    return createNewEventTemplate(this._data, this._offers);
+    return createNewEventTemplate(this._data, this._destination, this._offers);
   }
 
   reset(event) {
@@ -353,7 +354,7 @@ export default class NewEvent extends SmartView {
       .map((element) => element.value);
 
     const offers = getOffers(this._offers, this._data.type)
-                    .filter((offer) => checkedTitles.includes(offer.name));
+                    .filter((offer) => checkedTitles.includes(offer.title));
 
 
     this.updateData({

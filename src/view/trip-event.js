@@ -2,6 +2,7 @@ import moment from "moment";
 import he from "he";
 import {MAX_EVENT_OFFERS} from "../const.js";
 import {humanizeTime, getPrepositon} from "../utils/event.js";
+import {capitalizeFirstLetter} from "../utils/common.js";
 import AbstractView from "./abstract.js";
 
 const createOffersTemplate = (offers) => {
@@ -13,7 +14,7 @@ const createOffersTemplate = (offers) => {
     .slice(0, MAX_EVENT_OFFERS)
     .map((offer) =>
       `<li class="event__offer">
-        <span class="event__offer-title">${offer.name}</span>
+        <span class="event__offer-title">${offer.title}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
        </li>`
@@ -35,7 +36,7 @@ const createTripEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${typeInLowerCase}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${preposition} ${he.encode(city)}</h3>
+        <h3 class="event__title">${capitalizeFirstLetter(type)} ${preposition} ${he.encode(city)}</h3>
 
         <div class="event__schedule">
           <p class="event__time">

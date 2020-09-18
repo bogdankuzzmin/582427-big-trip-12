@@ -69,11 +69,18 @@ export const UserAction = {
 export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  INIT: `INIT`,
+  ERROR: `ERROR`,
 };
 
 export const MenuItem = {
   ADD_EVENT: `add-event`,
   EVENTS: `table`,
   STATS: `stats`
+};
+
+export const LoadMessage = {
+  LOADING: `Loading...`,
+  ERROR: `Couldn't load data, try again later`,
 };

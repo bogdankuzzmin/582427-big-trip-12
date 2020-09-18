@@ -1,4 +1,4 @@
-import {InsertPosition} from "../const.js";
+import {InsertPosition, UpdateType} from "../const.js";
 import {render, remove} from "../utils/render.js";
 import {sortTypeEvent} from "../utils/sort.js";
 import {filter} from "../utils/filter.js";
@@ -23,9 +23,11 @@ export default class SiteMenu {
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
-  _handleModelEvent() {
-    this._clearSiteMenu();
-    this.init();
+  _handleModelEvent(updateType) {
+    if (updateType === UpdateType.MAJOR) {
+      this._clearSiteMenu();
+      this.init();
+    }
   }
 
   init() {
