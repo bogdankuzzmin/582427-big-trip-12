@@ -51,7 +51,7 @@ export default class NewEvent {
   _handleFormEventSubmit(event) {
     this._changeData(
         UserAction.ADD_EVENT,
-        UpdateType.MINOR,
+        UpdateType.MAJOR,
         Object.assign({id: randomId(3)}, event)
     );
 
