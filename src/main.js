@@ -1,4 +1,4 @@
-import {sortTypeEvent} from "./utils/sort.js";
+import {UpdateType} from "./const.js";
 
 import TripBoardPresenter from "./presenter/trip-board.js";
 import SiteMenuPresenter from "./presenter/site-menu.js";
@@ -10,39 +10,45 @@ import OffersModel from "./model/offers.js";
 import DestinationModel from "./model/destination.js";
 import FilterModel from "./model/filter.js";
 
-import {generateEvent} from "./mock/event.js";
-import {generateDestination} from "./mock/destination.js";
-import {generateOffers} from "./mock/offers.js";
+import Api from "./api.js";
 
-const MAX_WAYPOINTS = 22;
+const AUTHORIZATION = `Basic e1D7qDMAawddWR1m4Bv`;
+const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 
-const offers = generateOffers();
-const destination = generateDestination();
-const events = new Array(MAX_WAYPOINTS).fill().map(() => generateEvent(offers, destination));
-const sortedEvents = events.sort(sortTypeEvent);
-// console.log(sortedEvents);
+const api = new Api(END_POINT, AUTHORIZATION);
 
 const offersModel = new OffersModel();
-offersModel.setOffers(offers);
-
 const destinationModel = new DestinationModel();
-destinationModel.setDestination(destination);
-
 const eventsModel = new EventsModel();
-eventsModel.setEvents(sortedEvents);
-
 const filterModel = new FilterModel();
 
 const tripMain = document.querySelector(`.trip-main`);
 const tripControlsContainer = document.querySelector(`.trip-main__trip-controls`);
 const tripEventContainer = document.querySelector(`.trip-events`);
 
-const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel);
+const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel, api);
 const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel, eventsModel);
 const tripControlsPresenter = new TripControlsPresenter(tripControlsContainer, tripEventContainer, tripMain, tripBoardPresenter, eventsModel, filterModel);
 const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel, filterModel);
 
-filterPresenter.init();
 tripBoardPresenter.init();
 tripControlsPresenter.init();
-siteMenuPresenter.init();
+
+Promise.all([
+  api.getDestinations(),
+  api.getOffers(),
+  api.getEvents()
+])
+  .then((values) => {
+    const [destination, offers, event] = values;
+
+    destinationModel.setDestination(destination);
+    offersModel.setOffers(offers);
+    eventsModel.setEvents(UpdateType.INIT, event);
+
+    siteMenuPresenter.init();
+    filterPresenter.init();
+  })
+  .catch(() => {
+    eventsModel.setError(UpdateType.ERROR);
+  });
