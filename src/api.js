@@ -11,6 +11,12 @@ const SuccessHTTPStatusRange = {
   MAX: 299
 };
 
+const DataUrl = {
+  EVENTS: `points`,
+  DESTINATIONS: `destinations`,
+  OFFERS: `offers`,
+};
+
 export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
@@ -18,27 +24,27 @@ export default class Api {
   }
 
   getEvents() {
-    return this._load({url: `points`})
+    return this._load({url: DataUrl.EVENTS})
       .then(Api.toJSON)
       .then((events) => events.map(EventModel.adaptToClient));
   }
 
   getDestinations() {
-    return this._load({url: `destinations`})
+    return this._load({url: DataUrl.DESTINATIONS})
       .then(Api.toJSON)
       .then((destinations) => destinations.map(DestinationModel.adaptToClient));
   }
 
   getOffers() {
-    return this._load({url: `offers`})
+    return this._load({url: DataUrl.OFFERS})
       .then(Api.toJSON);
   }
 
-  updateEvent(point) {
+  updateEvent(event) {
     return this._load({
-      url: `points/${point.id}`,
+      url: `${DataUrl.EVENTS}/${event.id}`,
       method: Method.PUT,
-      body: JSON.stringify(EventModel.adaptToServer(point)),
+      body: JSON.stringify(EventModel.adaptToServer(event)),
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then(Api.toJSON)
