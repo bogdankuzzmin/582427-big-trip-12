@@ -13,4 +13,21 @@ export default class Destination extends Observer {
   getDestination() {
     return this._destination;
   }
+
+  static adaptToClient(destination) {
+    const adaptDestination = Object.assign(
+        {},
+        destination,
+        {
+          city: destination.name,
+          description: destination.description,
+          photos: destination.pictures,
+        }
+    );
+
+    delete adaptDestination.name;
+    delete adaptDestination.pictures;
+
+    return adaptDestination;
+  }
 }
