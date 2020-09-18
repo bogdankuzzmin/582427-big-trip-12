@@ -1,7 +1,7 @@
 import moment from "moment";
 import {render, remove} from "../utils/render.js";
 import {separateEventsIntoDays} from "../utils/event.js";
-import {InsertPosition, SortType, UpdateType, UserAction} from "../const.js";
+import {InsertPosition, SortType, UpdateType, UserAction, LoadMessage} from "../const.js";
 
 import TripEventPresenter from "./trip-event.js";
 import NewEventPresenter from "./new-event.js";
@@ -10,12 +10,13 @@ import TripEventListView from "../view/trip-event-list.js";
 import TripEventDaysView from "../view/trip-event-days.js";
 import TripNoEventsView from "../view/trip-no-events.js";
 import TripSortView from "../view/trip-sort.js";
+import LoadMessageView from "../view/load-meesage.js";
 
 import {sortTypeTime, sortTypePrice, sortTypeEvent} from "../utils/sort.js";
 import {filter} from "../utils/filter.js";
 
 export default class Trip {
-  constructor(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel) {
+  constructor(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel, api) {
     this._tripEventContainer = tripEventContainer;
 
     this._eventsModel = eventsModel;
@@ -27,6 +28,11 @@ export default class Trip {
 
     this._tripEventPresenter = {};
     this._tripDaysStorage = {};
+    this._isLoading = true;
+    this._api = api;
+
+    this._errorMessageComponnt = null;
+    this._loadMessageComponnt = null;
 
     this._tripSortComponent = null;
 
@@ -87,7 +93,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventsModel.updateEvent(updateType, update);
+        this._api.updateEvent(update).then((response) => {
+          this._eventsModel.updateEvent(updateType, response);
+        });
         break;
       case UserAction.ADD_EVENT:
         this._eventsModel.addEvent(updateType, update);
@@ -111,10 +119,24 @@ export default class Trip {
         this._clearTripEventsList({resetSortType: true});
         this._renderEvents();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadMessageComponnt);
+        this._renderEvents();
+        break;
+      case UpdateType.ERROR:
+        this._clearLoading();
+        this._renderError();
+        break;
     }
   }
 
   _renderEvents() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     if (this._getEvents().length === 0) {
       this._renderNoTripEvents();
       return;
@@ -133,6 +155,23 @@ export default class Trip {
 
   _renderNoTripEvents() {
     render(this._tripEventContainer, this._tripNoEventsComponent, InsertPosition.BEFOREEND);
+  }
+
+  _renderError() {
+    this._errorMessageComponnt = new LoadMessageView(LoadMessage.ERROR);
+    render(this._tripEventContainer, this._errorMessageComponnt, InsertPosition.BEFOREEND);
+  }
+
+  _renderLoading() {
+    this._loadMessageComponnt = new LoadMessageView(LoadMessage.LOADING);
+    render(this._tripEventContainer, this._loadMessageComponnt, InsertPosition.BEFOREEND);
+  }
+
+  _clearLoading() {
+    if (this._loadMessageComponnt !== null) {
+      remove(this._loadMessageComponnt);
+      this._loadMessageComponnt = null;
+    }
   }
 
   _handleSortTypeChange(sortType) {
@@ -173,6 +212,11 @@ export default class Trip {
     remove(this._tripNoEventsComponent);
     remove(this._tripSortComponent);
     remove(this._tripEventDaysComponent);
+    remove(this._loadMessageComponnt);
+
+    if (this._errorMessageComponnt !== null) {
+      remove(this._errorMessageComponnt);
+    }
 
     if (resetSortType) {
       this._currentSortType = SortType.EVENT;
