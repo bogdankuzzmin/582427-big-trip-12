@@ -2,7 +2,6 @@ import TripEventEditView from "../view/new-event.js";
 
 import {render, remove} from "../utils/render.js";
 import {InsertPosition, UserAction, UpdateType} from "../const.js";
-import randomId from "random-id";
 
 export default class NewEvent {
   constructor(tripEventsListContainer, changeData) {
@@ -52,7 +51,7 @@ export default class NewEvent {
     this._changeData(
         UserAction.ADD_EVENT,
         UpdateType.MAJOR,
-        Object.assign({id: randomId(3)}, event)
+        event
     );
 
     this.destroy();
