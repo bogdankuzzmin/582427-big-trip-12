@@ -12,7 +12,7 @@ import FilterModel from "./model/filter.js";
 
 import Api from "./api.js";
 
-const AUTHORIZATION = `Basic e1D7qDMAawddWR1m4Bv`;
+const AUTHORIZATION = `Basic e1D7q11DgawddWR1m4Bv`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 
 const api = new Api(END_POINT, AUTHORIZATION);

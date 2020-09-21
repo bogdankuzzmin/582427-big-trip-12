@@ -5,7 +5,13 @@ import {InsertPosition, UserAction, UpdateType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
-  EDITING: `EDITING`
+  EDITING: `EDITING`,
+};
+
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORtING`,
 };
 
 export default class TripEvent {
@@ -69,6 +75,25 @@ export default class TripEvent {
     }
   }
 
+  setViewState(state) {
+    switch (state) {
+      case State.SAVING:
+        this._tripEventEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._tripEventEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ABORTING:
+        this._tripEventEditComponent.shakeForm();
+    }
+  }
+
   _replaceTripEventToEdit() {
     replace(this._tripEventEditComponent, this._tripEventComponent);
     this._changeMode();
@@ -108,8 +133,6 @@ export default class TripEvent {
         UpdateType.MINOR,
         update
     );
-
-    this._replaceEditToTripEvent();
   }
 
   _handleFormDeleteClick(event) {

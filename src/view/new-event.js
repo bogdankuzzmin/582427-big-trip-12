@@ -20,6 +20,14 @@ const BLANK_EVENT = {
   isFavorite: true,
 };
 
+const ButtonCondition = {
+  SAVE: `Save`,
+  SAVING: `Saving...`,
+  DELETE: `Delete`,
+  DELETING: `Deliting...`,
+  CANCEL: `Cancel`,
+};
+
 const createListOffersTemplate = (offers, isChecked) => {
   if (offers === null || offers.length === 0) {
     return ``;
@@ -125,9 +133,8 @@ const createDestinationItemTemplate = (destinations) => {
 };
 
 const createNewEventTemplate = (events, destinations, offers) => {
-  const {type, price, startDate, endDate, destination} = events;
+  const {type, price, startDate, endDate, destination, isDisabled, isSaving, isDeleting} = events;
 
-  const actionType = type;
   const city = destination.city;
   const actionPreposition = getPrepositon(type);
   const actionTypeTemplate = createTypeItemTemplate(EVENT_ACTION.types, type);
@@ -136,7 +143,8 @@ const createNewEventTemplate = (events, destinations, offers) => {
   const favoriteInputTemplate = createFavoriteInputTemplate(events);
   const rollupButtonTemplate = createRollupButtonTemplate(events);
 
-  const listOffersTemplate = createListOffersTemplate(getOffers(offers, actionType), events.offers);
+  const listOffersTemplate = createListOffersTemplate(getOffers(offers, type), events.offers);
+  const isDescription = destinations.description === destination.description;
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -146,7 +154,7 @@ const createNewEventTemplate = (events, destinations, offers) => {
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? `disabled` : ``}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -166,7 +174,7 @@ const createNewEventTemplate = (events, destinations, offers) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${capitalizeFirstLetter(type)} ${actionPreposition}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(city)}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(city)}" list="destination-list-1" ${isDisabled ? `disabled` : ``}>
           <datalist id="destination-list-1">
             ${createDestinationItemTemplate(destinations)}
           </datalist>
@@ -176,12 +184,12 @@ const createNewEventTemplate = (events, destinations, offers) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value="${moment(startDate).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value="${moment(startDate).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -189,11 +197,18 @@ const createNewEventTemplate = (events, destinations, offers) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" ${isDisabled ? `disabled` : ``}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${events.id ? `Delete` : `Cancel`}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit"
+          ${isDisabled || isDescription ? `disabled` : ``}>
+          ${isSaving ? `${ButtonCondition.SAVING}` : `${ButtonCondition.SAVE}`}
+        </button>
+
+        <button class="event__reset-btn" type="reset"
+          ${isDisabled ? `disabled` : ``}>
+          ${events.id ? `${isDeleting ? `${ButtonCondition.DELETING}` : `${ButtonCondition.DELETE}`}` : `${ButtonCondition.CANCEL}`}
+        </button>
 
         ${favoriteInputTemplate}
         ${rollupButtonTemplate}
@@ -234,6 +249,7 @@ export default class NewEvent extends SmartView {
     this._destinationCliclHandler = this._destinationCliclHandler.bind(this);
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
     this._offerClickHandler = this._offerClickHandler.bind(this);
+    this.resetFormState = this.resetFormState.bind(this);
 
     this._setInnerHandlers();
     this._setDatePicker();
@@ -340,10 +356,11 @@ export default class NewEvent extends SmartView {
 
     const findCity = this._destination.find((it) => it.city === targetCity);
     const destination = findCity ? findCity : {city: targetCity};
+    const isRender = destination.description === this._data.destination.description;
 
     this.updateData({
       destination,
-    }, destination.description === this._data.destination.description);
+    }, isRender);
 
   }
 
@@ -373,6 +390,18 @@ export default class NewEvent extends SmartView {
     evt.preventDefault();
     this.reset(this._sourcedData);
     this._callback.editEventClick();
+  }
+
+  resetFormState() {
+    this.updateData({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    });
+  }
+
+  shakeForm() {
+    this.shake(this.resetFormState);
   }
 
   _formEventSubmitHandler(evt) {
