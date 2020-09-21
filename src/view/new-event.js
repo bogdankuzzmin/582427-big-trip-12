@@ -16,7 +16,8 @@ const BLANK_EVENT = {
     city: ``,
   },
   startDate: new Date(),
-  endDate: new Date(moment(new Date()).add(2, `day`).format()),
+  endDate: new Date(),
+  // endDate: new Date(moment(new Date()).add(2, `day`).format()),
   isFavorite: true,
 };
 
@@ -332,6 +333,9 @@ export default class NewEvent extends SmartView {
     this.updateData({
       [`${keyDate}`]: selectedDate,
     }, true);
+
+    this._datepicker.start.set(`maxDate`, this._data.endDate);
+    this._datepicker.end.set(`minDate`, this._data.startDate);
   }
 
   _priceInputHandler(evt) {
