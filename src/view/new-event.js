@@ -16,7 +16,7 @@ const BLANK_EVENT = {
     city: ``,
   },
   startDate: new Date(),
-  endDate: new Date(),
+  endDate: new Date(moment(new Date()).add(2, `day`).format()),
   isFavorite: true,
 };
 
@@ -320,10 +320,18 @@ export default class NewEvent extends SmartView {
             dateFormat: `d/m/y H:i`,
             enableTime: true,
             defaultDate: this._data[`${onePickKeys}Date`],
+            minDate: onePickKeys === `end` ? this._data.startDate : null,
+            maxDate: onePickKeys === `start` ? this._data.endDate : null,
             onChange: (evt) => this._dateChangeHandler(evt, `${onePickKeys}Date`),
           }
       );
     }
+  }
+
+  _dateChangeHandler([selectedDate], keyDate) {
+    this.updateData({
+      [`${keyDate}`]: selectedDate,
+    }, true);
   }
 
   _priceInputHandler(evt) {
@@ -378,12 +386,6 @@ export default class NewEvent extends SmartView {
       offers,
     }, true);
 
-  }
-
-  _dateChangeHandler([selectedDate], keyDate) {
-    this.updateData({
-      [`${keyDate}`]: selectedDate,
-    }, true);
   }
 
   _editEventClickHandler(evt) {
