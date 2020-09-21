@@ -10,14 +10,16 @@
     "start": "webpack-dev-server --open"
   },
   "devDependencies": {
-    "chart.js": "^2.9.3",
-    "chartjs-plugin-datalabels": "^0.7.0",
-    "css-loader": "^4.2.2",
+    "chart.js": "2.9.3",
+    "chartjs-plugin-datalabels": "0.7.0",
+    "css-loader": "4.3.0",
     "eslint": "6.1.0",
     "eslint-config-htmlacademy": "0.5.2",
-    "flatpickr": "^4.6.6",
+    "flatpickr": "4.6.6",
     "he": "1.2.0",
-    "style-loader": "^1.2.1",
+    "moment": "2.28.0",
+    "random-id": "1.0.4",
+    "style-loader": "1.2.1",
     "webpack": "4.44.1",
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.0"
@@ -25,8 +27,5 @@
   "engines": {
     "node": "10"
   },
-  "dependencies": {
-    "moment": "^2.27.0",
-    "random-id": "^1.0.4"
-  }
+  "dependencies": {}
 }
