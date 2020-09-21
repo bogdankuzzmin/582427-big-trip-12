@@ -33,6 +33,7 @@ const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel, filterMod
 
 tripBoardPresenter.init();
 tripControlsPresenter.init();
+tripControlsPresenter.setEventAddButtonToggleDisable(true);
 
 Promise.all([
   api.getDestinations(),
@@ -48,6 +49,8 @@ Promise.all([
 
     siteMenuPresenter.init();
     filterPresenter.init();
+    tripControlsPresenter.setEventAddButtonToggleDisable(false);
+
   })
   .catch(() => {
     eventsModel.setError(UpdateType.ERROR);
