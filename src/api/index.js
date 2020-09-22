@@ -1,5 +1,5 @@
-import EventModel from "./model/events.js";
-import DestinationModel from "./model/destination.js";
+import EventModel from "../model/events.js";
+import DestinationModel from "../model/destination.js";
 
 const Method = {
   GET: `GET`,
@@ -17,7 +17,10 @@ const DataUrl = {
   EVENTS: `points`,
   DESTINATIONS: `destinations`,
   OFFERS: `offers`,
+  SYNC: `points/sync`,
 };
+
+const HEADER = {"Content-Type": `application/json`};
 
 export default class Api {
   constructor(endPoint, authorization) {
@@ -47,7 +50,7 @@ export default class Api {
       url: `${DataUrl.EVENTS}/${event.id}`,
       method: Method.PUT,
       body: JSON.stringify(EventModel.adaptToServer(event)),
-      headers: new Headers({"Content-Type": `application/json`})
+      headers: new Headers(HEADER)
     })
       .then(Api.toJSON)
       .then(EventModel.adaptToClient);
@@ -58,7 +61,7 @@ export default class Api {
       url: DataUrl.EVENTS,
       method: Method.POST,
       body: JSON.stringify(EventModel.adaptToServer(event)),
-      headers: new Headers({"Content-Type": `application/json`})
+      headers: new Headers(HEADER)
     })
       .then(Api.toJSON)
       .then(EventModel.adaptToClient);
@@ -69,6 +72,16 @@ export default class Api {
       url: `${DataUrl.EVENTS}/${event.id}`,
       method: Method.DELETE
     });
+  }
+
+  sync(data) {
+    return this._load({
+      url: DataUrl.SYNC,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers(HEADER)
+    })
+      .then(Api.toJSON);
   }
 
   _load({

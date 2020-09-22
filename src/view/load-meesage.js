@@ -3,7 +3,8 @@ import AbstractView from './abstract.js';
 const createLoadMessageTemplate = (message) => {
   return (
     `<p class="trip-events__msg">
-      ${message}
+      ${message} <br>
+      ${message === `Loading...` ? `<img src="img/load.svg" alt="load animation">` : ``}
     </p>`
   );
 };

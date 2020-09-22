@@ -30,4 +30,12 @@ export default class Destination extends Observer {
 
     return adaptDestination;
   }
+
+  static adaptToServer(destination) {
+    return {
+      "name": destination.city,
+      "description": destination.description,
+      "pictures": destination.photos,
+    };
+  }
 }

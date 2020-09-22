@@ -24,7 +24,10 @@ export default class SiteMenu {
   }
 
   _handleModelEvent(updateType) {
-    if (updateType === UpdateType.MAJOR) {
+    if (
+      updateType === UpdateType.MINOR ||
+      updateType === UpdateType.MAJOR
+    ) {
       this._clearSiteMenu();
       this.init();
     }

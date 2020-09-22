@@ -17,14 +17,14 @@ const BLANK_EVENT = {
   },
   startDate: new Date(),
   endDate: new Date(),
-  isFavorite: true,
+  isFavorite: false,
 };
 
 const ButtonCondition = {
   SAVE: `Save`,
   SAVING: `Saving...`,
   DELETE: `Delete`,
-  DELETING: `Deliting...`,
+  DELETING: `Deleting...`,
   CANCEL: `Cancel`,
 };
 
@@ -320,10 +320,21 @@ export default class NewEvent extends SmartView {
             dateFormat: `d/m/y H:i`,
             enableTime: true,
             defaultDate: this._data[`${onePickKeys}Date`],
+            minDate: onePickKeys === `end` ? this._data.startDate : null,
+            maxDate: onePickKeys === `start` ? this._data.endDate : null,
             onChange: (evt) => this._dateChangeHandler(evt, `${onePickKeys}Date`),
           }
       );
     }
+  }
+
+  _dateChangeHandler([selectedDate], keyDate) {
+    this.updateData({
+      [`${keyDate}`]: selectedDate,
+    }, true);
+
+    this._datepicker.start.set(`maxDate`, this._data.endDate);
+    this._datepicker.end.set(`minDate`, this._data.startDate);
   }
 
   _priceInputHandler(evt) {
@@ -378,12 +389,6 @@ export default class NewEvent extends SmartView {
       offers,
     }, true);
 
-  }
-
-  _dateChangeHandler([selectedDate], keyDate) {
-    this.updateData({
-      [`${keyDate}`]: selectedDate,
-    }, true);
   }
 
   _editEventClickHandler(evt) {

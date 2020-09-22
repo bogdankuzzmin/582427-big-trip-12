@@ -20,6 +20,7 @@ export default class TripControls {
 
     this._handleSiteMenuClick = this._handleSiteMenuClick.bind(this);
     this._handleEventNewFormClose = this._handleEventNewFormClose.bind(this);
+    this.setEventAddButtonToggleDisable = this.setEventAddButtonToggleDisable.bind(this);
   }
 
   init() {
@@ -45,6 +46,10 @@ export default class TripControls {
   _handleEventNewFormClose() {
     this._tripEventAddButtonComponent.setAddButtonDisabled(false);
     this._tripControlsComponent.setMenuItem(MenuItem.EVENTS);
+  }
+
+  setEventAddButtonToggleDisable(value) {
+    this._tripEventAddButtonComponent.setAddButtonDisabled(value);
   }
 
   _handleSiteMenuClick(menuItem) {

@@ -8,7 +8,6 @@ import NewEventPresenter from "./new-event.js";
 
 import TripEventListView from "../view/trip-event-list.js";
 import TripEventDaysView from "../view/trip-event-days.js";
-import TripNoEventsView from "../view/trip-no-events.js";
 import TripSortView from "../view/trip-sort.js";
 import LoadMessageView from "../view/load-meesage.js";
 
@@ -31,13 +30,13 @@ export default class Trip {
     this._isLoading = true;
     this._api = api;
 
-    this._errorMessageComponnt = null;
-    this._loadMessageComponnt = null;
+    this._noEventsMessageComponent = null;
+    this._errorMessageComponent = null;
+    this._loadMessageComponent = null;
 
     this._tripSortComponent = null;
 
     this._tripEventDaysComponent = new TripEventDaysView();
-    this._tripNoEventsComponent = new TripNoEventsView();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -140,7 +139,7 @@ export default class Trip {
         break;
       case UpdateType.INIT:
         this._isLoading = false;
-        remove(this._loadMessageComponnt);
+        remove(this._loadMessageComponent);
         this._renderEvents();
         break;
       case UpdateType.ERROR:
@@ -173,23 +172,24 @@ export default class Trip {
   }
 
   _renderNoTripEvents() {
-    render(this._tripEventContainer, this._tripNoEventsComponent, InsertPosition.BEFOREEND);
+    this._noEventsMessageComponent = new LoadMessageView(LoadMessage.NO_EVENTS);
+    render(this._tripEventContainer, this._noEventsMessageComponent, InsertPosition.BEFOREEND);
   }
 
   _renderError() {
-    this._errorMessageComponnt = new LoadMessageView(LoadMessage.ERROR);
-    render(this._tripEventContainer, this._errorMessageComponnt, InsertPosition.BEFOREEND);
+    this._errorMessageComponent = new LoadMessageView(LoadMessage.ERROR);
+    render(this._tripEventContainer, this._errorMessageComponent, InsertPosition.BEFOREEND);
   }
 
   _renderLoading() {
-    this._loadMessageComponnt = new LoadMessageView(LoadMessage.LOADING);
-    render(this._tripEventContainer, this._loadMessageComponnt, InsertPosition.BEFOREEND);
+    this._loadMessageComponent = new LoadMessageView(LoadMessage.LOADING);
+    render(this._tripEventContainer, this._loadMessageComponent, InsertPosition.BEFOREEND);
   }
 
   _clearLoading() {
-    if (this._loadMessageComponnt !== null) {
-      remove(this._loadMessageComponnt);
-      this._loadMessageComponnt = null;
+    if (this._loadMessageComponent !== null) {
+      remove(this._loadMessageComponent);
+      this._loadMessageComponent = null;
     }
   }
 
@@ -228,13 +228,13 @@ export default class Trip {
     this._tripEventPresenter = {};
     this._tripDaysStorage = {};
 
-    remove(this._tripNoEventsComponent);
+    remove(this._noEventsMessageComponent);
     remove(this._tripSortComponent);
     remove(this._tripEventDaysComponent);
-    remove(this._loadMessageComponnt);
+    remove(this._loadMessageComponent);
 
-    if (this._errorMessageComponnt !== null) {
-      remove(this._errorMessageComponnt);
+    if (this._errorMessageComponent !== null) {
+      remove(this._errorMessageComponent);
     }
 
     if (resetSortType) {

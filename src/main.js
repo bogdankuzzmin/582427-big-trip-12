@@ -10,12 +10,19 @@ import OffersModel from "./model/offers.js";
 import DestinationModel from "./model/destination.js";
 import FilterModel from "./model/filter.js";
 
-import Api from "./api.js";
+import Api from "./api/index.js";
+import Store from "./api/store.js";
+import Provider from "./api/provider.js";
 
-const AUTHORIZATION = `Basic e1D7q11DgawddWR1m4Bv`;
+const AUTHORIZATION = `Basic e1D7q11DgdEddWR1m4Bv`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
+const STORE_PREFIX = `big-trip`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 
 const offersModel = new OffersModel();
 const destinationModel = new DestinationModel();
@@ -26,18 +33,19 @@ const tripMain = document.querySelector(`.trip-main`);
 const tripControlsContainer = document.querySelector(`.trip-main__trip-controls`);
 const tripEventContainer = document.querySelector(`.trip-events`);
 
-const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel, api);
+const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel, apiWithProvider);
 const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel, eventsModel);
 const tripControlsPresenter = new TripControlsPresenter(tripControlsContainer, tripEventContainer, tripMain, tripBoardPresenter, eventsModel, filterModel);
 const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel, filterModel);
 
 tripBoardPresenter.init();
 tripControlsPresenter.init();
+tripControlsPresenter.setEventAddButtonToggleDisable(true);
 
 Promise.all([
-  api.getDestinations(),
-  api.getOffers(),
-  api.getEvents()
+  apiWithProvider.getDestinations(),
+  apiWithProvider.getOffers(),
+  apiWithProvider.getEvents()
 ])
   .then((values) => {
     const [destination, offers, event] = values;
@@ -48,7 +56,33 @@ Promise.all([
 
     siteMenuPresenter.init();
     filterPresenter.init();
+    tripControlsPresenter.setEventAddButtonToggleDisable(false);
+
   })
   .catch(() => {
     eventsModel.setError(UpdateType.ERROR);
   });
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+      console.log(`ServiceWorker available`); // eslint-disable-line
+    }).catch(() => {
+      console.error(`ServiceWorker isn't available`); // eslint-disable-line
+    });
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+
+  if (apiWithProvider.isSyncRequired) {
+    apiWithProvider.sync()
+      .then((syncedEvents) => {
+        eventsModel.setEvents(UpdateType.MINOR, syncedEvents);
+      });
+  }
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});

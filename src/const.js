@@ -81,6 +81,7 @@ export const MenuItem = {
 };
 
 export const LoadMessage = {
+  NO_EVENTS: `Click New Event to create your first event`,
   LOADING: `Loading...`,
   ERROR: `Couldn't load data, try again later`,
 };
