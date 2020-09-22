@@ -17,15 +17,14 @@ const BLANK_EVENT = {
   },
   startDate: new Date(),
   endDate: new Date(),
-  // endDate: new Date(moment(new Date()).add(2, `day`).format()),
-  isFavorite: true,
+  isFavorite: false,
 };
 
 const ButtonCondition = {
   SAVE: `Save`,
   SAVING: `Saving...`,
   DELETE: `Delete`,
-  DELETING: `Deliting...`,
+  DELETING: `Deleting...`,
   CANCEL: `Cancel`,
 };
 
