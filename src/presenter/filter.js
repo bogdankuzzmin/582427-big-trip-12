@@ -1,5 +1,6 @@
 import FilterView from "../view/trip-filter.js";
 import {render, replace, remove} from "../utils/render.js";
+import {filter} from "../utils/filter.js";
 import {FilterType, UpdateType, InsertPosition} from "../const.js";
 
 export default class Filter {
@@ -23,8 +24,15 @@ export default class Filter {
 
     const filters = this._getFilters();
     const prevFilterComponent = this._filterComponent;
+    const events = this._eventsModel.getEvents();
 
-    this._filterComponent = new FilterView(filters, this._currentFilter);
+    const filtersStatus = {
+      [FilterType.EVERYTHING]: events.length > 0,
+      [FilterType.FUTURE]: filter[FilterType.FUTURE](events).length > 0,
+      [FilterType.PAST]: filter[FilterType.PAST](events).length > 0,
+    };
+
+    this._filterComponent = new FilterView(filters, this._currentFilter, filtersStatus);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
