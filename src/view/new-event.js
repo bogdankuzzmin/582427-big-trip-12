@@ -346,7 +346,7 @@ export default class NewEvent extends SmartView {
   _setDatePicker() {
     const datapicker = Object.entries(this._datepicker);
 
-    for (let onePick of datapicker) {
+    for (const onePick of datapicker) {
       const onePickKeys = onePick[0];
       let onePickValues = onePick[1];
 
