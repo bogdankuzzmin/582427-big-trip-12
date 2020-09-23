@@ -1,6 +1,8 @@
 import moment from "moment";
 import {render, remove} from "../utils/render.js";
 import {separateEventsIntoDays} from "../utils/event.js";
+import {sortTypeTime, sortTypePrice, sortTypeEvent} from "../utils/sort.js";
+import {filter} from "../utils/filter.js";
 import {InsertPosition, SortType, UpdateType, UserAction, LoadMessage} from "../const.js";
 
 import TripEventPresenter, {State as TripEventPresenterViewState} from "./trip-event.js";
@@ -11,9 +13,6 @@ import TripEventDaysView from "../view/trip-event-days.js";
 import TripSortView from "../view/trip-sort.js";
 import LoadMessageView from "../view/load-meesage.js";
 
-import {sortTypeTime, sortTypePrice, sortTypeEvent} from "../utils/sort.js";
-import {filter} from "../utils/filter.js";
-
 export default class Trip {
   constructor(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel, api) {
     this._tripEventContainer = tripEventContainer;
@@ -23,17 +22,17 @@ export default class Trip {
     this._destinationModel = destinationModel;
     this._filterModel = filterModel;
 
+    this._api = api;
+    this._isLoading = true;
+
     this._currentSortType = SortType.EVENT;
 
     this._tripEventPresenter = {};
     this._tripDaysStorage = {};
-    this._isLoading = true;
-    this._api = api;
 
     this._noEventsMessageComponent = null;
     this._errorMessageComponent = null;
     this._loadMessageComponent = null;
-
     this._tripSortComponent = null;
 
     this._tripEventDaysComponent = new TripEventDaysView();
@@ -259,6 +258,7 @@ export default class Trip {
     Object.keys(groupSeparatedEvents).forEach((oneDay, dayId) => {
       const eventDay = (formatDate) => moment(oneDay).format(formatDate);
       const tripEventsListComponent = new TripEventListView(dayId + 1, eventDay, groupSeparatedEvents[oneDay]);
+
       render(this._tripEventDaysComponent, tripEventsListComponent, InsertPosition.BEFOREEND);
       this._tripDaysStorage[oneDay] = tripEventsListComponent;
 
@@ -269,11 +269,11 @@ export default class Trip {
   }
 
   _renderEventsWithoutDays() {
+    const events = this._getEvents().slice();
     const tripEventsListComponent = new TripEventListView(null, null);
+
     render(this._tripEventDaysComponent, tripEventsListComponent, InsertPosition.BEFOREEND);
     this._tripDaysStorage[`oneDay`] = tripEventsListComponent;
-
-    const events = this._getEvents().slice();
 
     events.forEach((event) => {
       this._renderTripEventPresenter(tripEventsListComponent.getEventListContainer(), event);

@@ -1,6 +1,7 @@
 import randomId from "random-id";
-import DestinationModel from "../model/destination.js";
+
 import EventModel from "../model/events.js";
+import DestinationModel from "../model/destinations.js";
 
 const getSyncedEvents = (items) => {
   return items.filter(({success}) => success)
@@ -19,16 +20,6 @@ export default class Provider {
   constructor(api, store) {
     this._api = api;
     this._store = store;
-    this._isSyncRequired = false;
-  }
-
-  get isSyncRequired() {
-    return this._isSyncRequired;
-  }
-
-  set isSyncRequired(value) {
-    this._isSyncRequired = value;
-    this._store.setSyncFlag(value);
   }
 
   getDestinations() {
@@ -56,7 +47,6 @@ export default class Provider {
     }
 
     const storeOffers = Object.values(this._store.getOffers());
-
     return Promise.resolve(storeOffers);
   }
 
@@ -84,7 +74,6 @@ export default class Provider {
     }
 
     this._store.setEvent(event.id, EventModel.adaptToServer(Object.assign({}, event)));
-    this.isSyncRequired = true;
 
     return Promise.resolve(event);
   }
@@ -102,7 +91,6 @@ export default class Provider {
     const localNewEvent = Object.assign({}, event, {id: localNewEventId});
 
     this._store.setEvent(localNewEvent.id, EventModel.adaptToServer(localNewEvent));
-    this.isSyncRequired = true;
 
     return Promise.resolve(localNewEvent);
   }
@@ -114,7 +102,6 @@ export default class Provider {
     }
 
     this._store.removeEvent(event.id);
-    this.isSyncRequired = true;
 
     return Promise.resolve();
   }
@@ -128,7 +115,7 @@ export default class Provider {
           const createdEvents = getSyncedEvents(response.created);
           const updatedEvents = getSyncedEvents(response.updated);
           const items = createStoreStructure([...createdEvents, ...updatedEvents]);
-          this.isSyncRequired = true;
+
           this._store.getEvents(items);
 
           return Object.values(items);

@@ -3,10 +3,12 @@ import Chart from 'chart.js';
 import moment from "moment";
 
 import {EVENT_ACTION, typeToEmoji} from "../const.js";
-import AbstractView from "./abstract.js";
 import {capitalizeFirstLetter} from "../utils/common.js";
 
+import AbstractView from "./abstract.js";
+
 const BAR_HEIGHT = 45;
+
 const ChartType = {
   MONEY: `MONEY`,
   TRANSPORT: `TRANSPORT`,

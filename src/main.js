@@ -7,7 +7,7 @@ import TripControlsPresenter from "./presenter/trip-controls.js";
 
 import EventsModel from "./model/events.js";
 import OffersModel from "./model/offers.js";
-import DestinationModel from "./model/destination.js";
+import DestinationModel from "./model/destinations.js";
 import FilterModel from "./model/filter.js";
 
 import Api from "./api/index.js";
@@ -35,7 +35,7 @@ const tripEventContainer = document.querySelector(`.trip-events`);
 
 const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel, apiWithProvider);
 const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel, eventsModel);
-const tripControlsPresenter = new TripControlsPresenter(tripControlsContainer, tripEventContainer, tripMain, tripBoardPresenter, eventsModel, filterModel);
+const tripControlsPresenter = new TripControlsPresenter(tripControlsContainer, tripEventContainer, tripMain, tripBoardPresenter, filterPresenter, eventsModel, filterModel);
 const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel, filterModel);
 
 tripBoardPresenter.init();
@@ -74,13 +74,7 @@ window.addEventListener(`load`, () => {
 
 window.addEventListener(`online`, () => {
   document.title = document.title.replace(` [offline]`, ``);
-
-  if (apiWithProvider.isSyncRequired) {
-    apiWithProvider.sync()
-      .then((syncedEvents) => {
-        eventsModel.setEvents(UpdateType.MINOR, syncedEvents);
-      });
-  }
+  apiWithProvider.sync();
 });
 
 window.addEventListener(`offline`, () => {

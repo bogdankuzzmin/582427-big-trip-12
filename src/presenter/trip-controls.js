@@ -6,11 +6,14 @@ import TripEventAddButtonView from "../view/trip-event-add-button.js";
 import StatsView from "../view/stats.js";
 
 export default class TripControls {
-  constructor(tripControlsContainer, statsContainer, tripEventAddButtonContainer, tripBordPresenter, eventsModel, filterModel) {
+  constructor(tripControlsContainer, statsContainer, tripEventAddButtonContainer, tripBordPresenter, filterPresenter, eventsModel, filterModel) {
     this._tripControlsContainer = tripControlsContainer;
     this._statsContainer = statsContainer;
     this._tripEventAddButtonContainer = tripEventAddButtonContainer;
+
     this._tripBordPresenter = tripBordPresenter;
+    this._filterPresenter = filterPresenter;
+
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
 
@@ -75,6 +78,7 @@ export default class TripControls {
 
       case MenuItem.STATS:
         this._tripBordPresenter.destroy();
+        this._filterPresenter.disableFilters();
 
         this._statsComponent = new StatsView(this._eventsModel.getEvents());
         render(this._statsContainer.parentElement, this._statsComponent, InsertPosition.BEFOREEND);

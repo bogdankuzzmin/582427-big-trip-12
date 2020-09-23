@@ -1,7 +1,8 @@
-import TripEventView from "../view/trip-event.js";
-import TripEventEditView from "../view/new-event.js";
 import {render, replace, remove} from "../utils/render.js";
 import {InsertPosition, UserAction, UpdateType} from "../const.js";
+
+import TripEventView from "../view/trip-event.js";
+import TripEventEditView from "../view/new-event.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,

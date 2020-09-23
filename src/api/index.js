@@ -1,5 +1,5 @@
 import EventModel from "../model/events.js";
-import DestinationModel from "../model/destination.js";
+import DestinationModel from "../model/destinations.js";
 
 const Method = {
   GET: `GET`,
@@ -10,7 +10,7 @@ const Method = {
 
 const SuccessHTTPStatusRange = {
   MIN: 200,
-  MAX: 299
+  MAX: 299,
 };
 
 const DataUrl = {

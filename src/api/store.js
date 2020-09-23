@@ -2,9 +2,7 @@ const Key = {
   EVENTS: `points`,
   OFFERS: `offers`,
   DESTINATIONS: `destinations`,
-  SYNC_REQUIRED: `sync_required`,
 };
-
 
 export default class Store {
   constructor(key, storage) {
@@ -22,10 +20,6 @@ export default class Store {
 
   getOffers() {
     return this._getItems()[Key.OFFERS];
-  }
-
-  getSyncFlag() {
-    return this._getItems()[Key.SYNC_REQUIRED];
   }
 
   setEvent(id, event) {
@@ -46,10 +40,6 @@ export default class Store {
 
   setDestinations(destinations) {
     this._setItem(Key.DESTINATIONS, destinations);
-  }
-
-  setSyncFlag(value) {
-    this._setItem(Key.SYNC_REQUIRED, value);
   }
 
   removeEvent(id) {

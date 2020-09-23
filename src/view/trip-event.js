@@ -1,8 +1,10 @@
 import moment from "moment";
 import he from "he";
+
 import {MAX_EVENT_OFFERS} from "../const.js";
 import {humanizeTime, getPrepositon} from "../utils/event.js";
 import {capitalizeFirstLetter} from "../utils/common.js";
+
 import AbstractView from "./abstract.js";
 
 const createOffersTemplate = (offers) => {
