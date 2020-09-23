@@ -1,5 +1,5 @@
 import randomId from "random-id";
-import DestinationModel from "../model/destination.js";
+import DestinationModel from "../model/destinations.js";
 import EventModel from "../model/events.js";
 
 const getSyncedEvents = (items) => {

@@ -7,7 +7,7 @@ import TripControlsPresenter from "./presenter/trip-controls.js";
 
 import EventsModel from "./model/events.js";
 import OffersModel from "./model/offers.js";
-import DestinationModel from "./model/destination.js";
+import DestinationModel from "./model/destinations.js";
 import FilterModel from "./model/filter.js";
 
 import Api from "./api/index.js";
