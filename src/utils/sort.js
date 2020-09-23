@@ -7,6 +7,7 @@ export const sortTypeEvent = (eventA, eventB) => {
 export const sortTypeTime = (timeA, timeB) => {
   const durationA = moment(timeA.endDate).diff(moment(timeA.startDate));
   const durationB = moment(timeB.endDate).diff(moment(timeB.startDate));
+
   return durationB - durationA;
 };
 

@@ -5,7 +5,6 @@ const Key = {
   SYNC_REQUIRED: `sync_required`,
 };
 
-
 export default class Store {
   constructor(key, storage) {
     this._storage = storage;

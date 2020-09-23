@@ -1,13 +1,14 @@
-import FilterView from "../view/trip-filter.js";
 import {render, replace, remove} from "../utils/render.js";
 import {filter} from "../utils/filter.js";
 import {FilterType, UpdateType, InsertPosition} from "../const.js";
 
+import FilterView from "../view/trip-filter.js";
+
 export default class Filter {
-  constructor(filterContainer, filterModel, eventsModel) {
+  constructor(filterContainer, filterModel, eventModel) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
-    this._eventsModel = eventsModel;
+    this._eventModel = eventModel;
 
     this._currentFilter = null;
     this._filterComponent = null;
@@ -15,7 +16,7 @@ export default class Filter {
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
 
-    this._eventsModel.addObserver(this._handleModelEvent);
+    this._eventModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
@@ -24,7 +25,7 @@ export default class Filter {
 
     const filters = this._getFilters();
     const prevFilterComponent = this._filterComponent;
-    const events = this._eventsModel.getEvents();
+    const events = this._eventModel.getEvents();
 
     const filtersStatus = {
       [FilterType.EVERYTHING]: events.length > 0,
@@ -42,6 +43,10 @@ export default class Filter {
 
     replace(this._filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+  }
+
+  disableFilters() {
+    this._filterComponent.disableFilters();
   }
 
   _handleModelEvent() {

@@ -1,6 +1,7 @@
 import randomId from "random-id";
-import DestinationModel from "../model/destinations.js";
+
 import EventModel from "../model/events.js";
+import DestinationModel from "../model/destinations.js";
 
 const getSyncedEvents = (items) => {
   return items.filter(({success}) => success)
@@ -56,7 +57,6 @@ export default class Provider {
     }
 
     const storeOffers = Object.values(this._store.getOffers());
-
     return Promise.resolve(storeOffers);
   }
 

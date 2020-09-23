@@ -1,12 +1,12 @@
 import moment from "moment";
 import he from "he";
+import flatpickr from "flatpickr";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+
 import {EVENT_ACTION} from "../const.js";
 import {getPrepositon, getOffers} from "../utils/event.js";
 import {capitalizeFirstLetter} from "../utils/common.js";
 import SmartView from "./smart.js";
-
-import flatpickr from "flatpickr";
-import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
   type: `taxi`,
@@ -48,10 +48,14 @@ const createListOffersTemplate = (offers, isChecked) => {
 const createNewOfferTemplate = (offer, isChecked) => {
   const offerNameId = offer.title.split(` `).join(`-`).toLowerCase();
 
-
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerNameId}" type="checkbox" name="event-offer-${offerNameId}" ${isChecked ? `checked` : ``} value="${offer.title}">
+      <input class="event__offer-checkbox  visually-hidden"
+        id="event-offer-${offerNameId}"
+        type="checkbox" name="event-offer-${offerNameId}"
+        ${isChecked ? `checked` : ``}
+        value="${offer.title}">
+
       <label class="event__offer-label" for="event-offer-${offerNameId}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;
@@ -88,9 +92,15 @@ const createFavoriteInputTemplate = (event) => {
   }
 
   return (
-    `<input id="event-${event.id}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${event.isFavorite ? `checked` : ``}>
+    `<input class="event__favorite-checkbox  visually-hidden"
+      id="event-${event.id}"
+      type="checkbox"
+      name="event-favorite"
+      ${event.isFavorite ? `checked` : ``}>
+
       <label class="event__favorite-btn" for="event-${event.id}">
       <span class="visually-hidden">Add to favorite</span>
+
       <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
         <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
       </svg>
@@ -118,9 +128,17 @@ const createTypeItemTemplate = (action, currentType) => {
 
       return (
         `<div class="event__type-item">
-          <input id="event-type-${lowCaseType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
-          value="${lowCaseType}" ${currentType === lowCaseType ? `checked` : ``}>
-          <label class="event__type-label  event__type-label--${lowCaseType}" data-type="${lowCaseType}" for="event-type-${lowCaseType}-1">${actionType}</label>
+          <input class="event__type-input
+            visually-hidden" type="radio"
+            name="event-type"
+            id="event-type-${lowCaseType}-1"
+            value="${lowCaseType}" ${currentType === lowCaseType ? `checked` : ``}>
+
+          <label class="event__type-label event__type-label--${lowCaseType}"
+            data-type="${lowCaseType}"
+            for="event-type-${lowCaseType}-1">
+            ${actionType}
+          </label>
         </div>`
       );
     }).join(``);
@@ -174,7 +192,13 @@ const createNewEventTemplate = (events, destinations, offers) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${capitalizeFirstLetter(type)} ${actionPreposition}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(city)}" list="destination-list-1" ${isDisabled ? `disabled` : ``}>
+
+          <input class="event__input  event__input--destination"
+            id="event-destination-1" type="text"
+            name="event-destination"
+            value="${he.encode(city)}"
+            list="destination-list-1" ${isDisabled ? `disabled` : ``}>
+
           <datalist id="destination-list-1">
             ${createDestinationItemTemplate(destinations)}
           </datalist>
@@ -184,12 +208,23 @@ const createNewEventTemplate = (events, destinations, offers) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value="${moment(startDate).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
+
+          <input class="event__input  event__input--time"
+            id="event-start-time"
+            type="text"
+            name="event-start-time"
+            value="${moment(startDate).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
+
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
+
+          <input class="event__input  event__input--time"
+            id="event-end-time"
+            type="text"
+            name="event-end-time"
+            value="${moment(endDate).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -197,15 +232,21 @@ const createNewEventTemplate = (events, destinations, offers) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" ${isDisabled ? `disabled` : ``}>
+          <input class="event__input  event__input--price"
+            id="event-price-1"
+            type="number"
+            name="event-price"
+            value="${price}" ${isDisabled ? `disabled` : ``}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit"
+        <button class="event__save-btn  btn  btn--blue"
+          type="submit"
           ${isDisabled || isDescription ? `disabled` : ``}>
           ${isSaving ? `${ButtonCondition.SAVING}` : `${ButtonCondition.SAVE}`}
         </button>
 
-        <button class="event__reset-btn" type="reset"
+        <button class="event__reset-btn"
+          type="reset"
           ${isDisabled ? `disabled` : ``}>
           ${events.id ? `${isDeleting ? `${ButtonCondition.DELETING}` : `${ButtonCondition.DELETE}`}` : `${ButtonCondition.CANCEL}`}
         </button>
@@ -255,6 +296,10 @@ export default class NewEvent extends SmartView {
     this._setDatePicker();
   }
 
+  get template() {
+    return createNewEventTemplate(this._data, this._destination, this._offers);
+  }
+
   removeElement() {
     super.removeElement();
 
@@ -265,10 +310,6 @@ export default class NewEvent extends SmartView {
           oneDatepicker = null;
         }
       });
-  }
-
-  get template() {
-    return createNewEventTemplate(this._data, this._destination, this._offers);
   }
 
   reset(event) {
@@ -328,23 +369,6 @@ export default class NewEvent extends SmartView {
     }
   }
 
-  _dateChangeHandler([selectedDate], keyDate) {
-    this.updateData({
-      [`${keyDate}`]: selectedDate,
-    }, true);
-
-    this._datepicker.start.set(`maxDate`, this._data.endDate);
-    this._datepicker.end.set(`minDate`, this._data.startDate);
-  }
-
-  _priceInputHandler(evt) {
-    evt.preventDefault();
-
-    this.updateData({
-      price: Number(evt.target.value),
-    }, true);
-  }
-
   _typeClickHandler(evt) {
     evt.preventDefault();
 
@@ -373,6 +397,23 @@ export default class NewEvent extends SmartView {
       destination,
     }, isRender);
 
+  }
+
+  _dateChangeHandler([selectedDate], keyDate) {
+    this.updateData({
+      [`${keyDate}`]: selectedDate,
+    }, true);
+
+    this._datepicker.start.set(`maxDate`, this._data.endDate);
+    this._datepicker.end.set(`minDate`, this._data.startDate);
+  }
+
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+
+    this.updateData({
+      price: Number(evt.target.value),
+    }, true);
   }
 
   _offerClickHandler() {

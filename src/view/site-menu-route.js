@@ -13,7 +13,7 @@ const generateTripRoute = (events) => {
   return events.map((event) => event.destination.city).join(` &mdash; `);
 };
 
-const generateRouteTime = (events) => {
+const generateTripRouteDate = (events) => {
   if (events.length === 0) {
     return ``;
   }
@@ -27,12 +27,12 @@ const generateRouteTime = (events) => {
 
 const createMenuRouteTemplate = (events) => {
   const city = generateTripRoute(events);
-  const routeTimeTemplate = generateRouteTime(events);
+  const routeDate = generateTripRouteDate(events);
 
   return (
     `<div class="trip-info__main">
         <h1 class="trip-info__title">${city}</h1>
-        ${routeTimeTemplate}
+        ${routeDate}
       </div>`
   );
 };
