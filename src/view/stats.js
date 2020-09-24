@@ -158,10 +158,6 @@ export default class Stats extends AbstractView {
 
     this._events = events;
 
-    this._moneyChart = null;
-    this._transportChart = null;
-    this._timeSpendCtx = null;
-
     this._setCharts();
   }
 

@@ -316,6 +316,18 @@ export default class NewEvent extends SmartView {
     this.updateData(event);
   }
 
+  resetFormState() {
+    this.updateData({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    });
+  }
+
+  shakeForm() {
+    this.shake(this.resetFormState);
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
     this._setDatePicker();
@@ -329,18 +341,6 @@ export default class NewEvent extends SmartView {
     if (this._callback.editEventClick) {
       this.setEditEventClickHandler(this._callback.editEventClick);
     }
-  }
-
-  _setInnerHandlers() {
-    this.element
-      .querySelector(`.event__input--price`)
-      .addEventListener(`input`, this._priceInputHandler);
-    this.element
-      .querySelector(`.event__type-list`)
-      .addEventListener(`click`, this._typeClickHandler);
-    this.element
-      .querySelector(`.event__input--destination`)
-      .addEventListener(`input`, this._destinationCliclHandler);
   }
 
   _setDatePicker() {
@@ -367,6 +367,18 @@ export default class NewEvent extends SmartView {
           }
       );
     }
+  }
+
+  _setInnerHandlers() {
+    this.element
+      .querySelector(`.event__input--price`)
+      .addEventListener(`input`, this._priceInputHandler);
+    this.element
+      .querySelector(`.event__type-list`)
+      .addEventListener(`click`, this._typeClickHandler);
+    this.element
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`input`, this._destinationCliclHandler);
   }
 
   _typeClickHandler(evt) {
@@ -436,18 +448,6 @@ export default class NewEvent extends SmartView {
     evt.preventDefault();
     this.reset(this._sourcedData);
     this._callback.editEventClick();
-  }
-
-  resetFormState() {
-    this.updateData({
-      isDisabled: false,
-      isSaving: false,
-      isDeleting: false
-    });
-  }
-
-  shakeForm() {
-    this.shake(this.resetFormState);
   }
 
   _formEventSubmitHandler(evt) {

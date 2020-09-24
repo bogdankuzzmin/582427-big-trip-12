@@ -1,20 +1,12 @@
 import moment from "moment";
-import {getRandomInteger, capitalizeFirstLetter} from "../utils/common.js";
+import {capitalizeFirstLetter} from "../utils/common.js";
 import {EVENT_ACTION} from "../const.js";
 
-export const generateDate = (maxShiftEventMinutes, startDate = null) => {
-  const millisecondsShift = 1000 * 60 * maxShiftEventMinutes;
-  const randomTimeShift = getRandomInteger(0, millisecondsShift);
-
-  const startTime = startDate !== null ? startDate.getTime() : new Date().getTime();
-
-  return new Date(startTime + randomTimeShift);
-};
+const ONE_HOUR_IN_MINUTES = 60;
+const ONE_DAY_IN_HOURS = 24;
 
 export const humanizeTime = (startDate, endDate) => {
-  const ONE_HOUR_IN_MINUTES = 60;
-  const ONE_DAY_IN_HOURS = 24;
-  const readable = [];
+  const readableDates = [];
 
   const startTime = moment(startDate);
   const endTime = moment(endDate);
@@ -24,21 +16,21 @@ export const humanizeTime = (startDate, endDate) => {
   const addZeroToNumber = (number) => number < 10 && number > 0 ? `0` + number : Math.round(number);
 
   if (getDiffTime(`days`) >= 1) {
-    readable.push(`${addZeroToNumber(getDiffTime(`days`))}D
+    readableDates.push(`${addZeroToNumber(getDiffTime(`days`))}D
                    ${addZeroToNumber(getDiffTime(`hours`) - (getDiffTime(`days`) * ONE_DAY_IN_HOURS))}H
                    ${addZeroToNumber(getDiffTime(`minutes`) - (getDiffTime(`hours`) * ONE_HOUR_IN_MINUTES))}M`);
   }
 
   if (getDiffTime(`hours`) > 0 && getDiffTime(`days`) === 0) {
-    readable.push(`${addZeroToNumber(getDiffTime(`hours`))}H
+    readableDates.push(`${addZeroToNumber(getDiffTime(`hours`))}H
                    ${addZeroToNumber(getDiffTime(`minutes`) - (getDiffTime(`hours`) * ONE_HOUR_IN_MINUTES))}M`);
   }
 
   if (getDiffTime(`minutes`) < ONE_HOUR_IN_MINUTES) {
-    readable.push(`${addZeroToNumber(getDiffTime(`minutes`))}M`);
+    readableDates.push(`${addZeroToNumber(getDiffTime(`minutes`))}M`);
   }
 
-  return readable;
+  return readableDates;
 };
 
 export const separateEventsIntoDays = (sortedEvents) => {
@@ -62,11 +54,7 @@ export const separateEventsIntoDays = (sortedEvents) => {
 export const getPrepositon = (actionType) => {
   const type = capitalizeFirstLetter(actionType);
 
-  let preposition = `to`;
-
-  if (Object.values(EVENT_ACTION.activities).includes(type)) {
-    preposition = `in`;
-  }
+  let preposition = Object.values(EVENT_ACTION.activities).includes(type) ? `in` : `to`;
 
   return preposition;
 };

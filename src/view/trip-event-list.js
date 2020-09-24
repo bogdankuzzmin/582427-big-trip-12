@@ -1,15 +1,15 @@
 import AbstractView from "./abstract.js";
 
-const createDayInfoTemplate = (dayId, eventDate) => {
-  if (dayId === null || eventDate === null) {
+const createDayInfoTemplate = (dayId, humanizeEventDate) => {
+  if (dayId === null || humanizeEventDate === null) {
     dayId = ``;
-    eventDate = () => ``;
+    humanizeEventDate = () => ``;
   }
 
   return (
     `<div class="day__info">
       <span class="day__counter">${dayId}</span>
-      <time class="day__date" datetime="${eventDate(`YYYY-MM-DD`)}">${eventDate(`MMM DD`)}</time>
+      <time class="day__date" datetime="${humanizeEventDate(`YYYY-MM-DD`)}">${humanizeEventDate(`MMM DD`)}</time>
     </div>`
   );
 

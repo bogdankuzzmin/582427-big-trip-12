@@ -10,7 +10,7 @@ import OffersModel from "./model/offers.js";
 import DestinationModel from "./model/destinations.js";
 import FilterModel from "./model/filter.js";
 
-import Api from "./api/index.js";
+import Api from "./api/api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 
@@ -19,6 +19,11 @@ const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `big-trip`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+
+const tripMain = document.querySelector(`.trip-main`);
+const tripControls = document.querySelector(`.trip-main__trip-controls`);
+const tripControlsContainer = tripControls.querySelector(`h2`);
+const tripEventContainer = document.querySelector(`.trip-events`);
 
 const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
@@ -29,12 +34,8 @@ const destinationModel = new DestinationModel();
 const eventsModel = new EventsModel();
 const filterModel = new FilterModel();
 
-const tripMain = document.querySelector(`.trip-main`);
-const tripControlsContainer = document.querySelector(`.trip-main__trip-controls`);
-const tripEventContainer = document.querySelector(`.trip-events`);
-
 const tripBoardPresenter = new TripBoardPresenter(tripEventContainer, eventsModel, offersModel, destinationModel, filterModel, apiWithProvider);
-const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel, eventsModel);
+const filterPresenter = new FilterPresenter(tripControls, filterModel, eventsModel);
 const tripControlsPresenter = new TripControlsPresenter(tripControlsContainer, tripEventContainer, tripMain, tripBoardPresenter, filterPresenter, eventsModel, filterModel);
 const siteMenuPresenter = new SiteMenuPresenter(tripMain, eventsModel, filterModel);
 

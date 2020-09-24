@@ -35,10 +35,8 @@ export default class TripControls {
   }
 
   _renderTripControls() {
-    const tripControlsTitle = this._tripControlsContainer.querySelector(`h2`);
-
     this._tripControlsComponent = new TripControlsView(this._controlModel);
-    render(tripControlsTitle, this._tripControlsComponent, InsertPosition.AFTEREND);
+    render(this._tripControlsContainer, this._tripControlsComponent, InsertPosition.AFTEREND);
   }
 
   _renderTripEventAddButton() {

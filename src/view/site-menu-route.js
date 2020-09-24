@@ -1,12 +1,14 @@
 import moment from "moment";
 import AbstractView from "./abstract.js";
 
+const ROUTE_COUNT = 3;
+
 const generateTripRoute = (events) => {
   if (events.length === 0) {
     return ``;
   }
 
-  if (events.length > 3) {
+  if (events.length > ROUTE_COUNT) {
     return `${events[0].destination.city} &mdash; . . . &mdash; ${events[events.length - 1].destination.city}`;
   }
 
@@ -20,7 +22,7 @@ const generateTripRouteDate = (events) => {
 
   const firstDay = moment(events[0].startDate).format(`MMM DD`);
   const eventsLength = events.length - 1;
-  const lastDay = moment(events[eventsLength].startDate).format(`MMM DD`);
+  const lastDay = moment(events[eventsLength].endDate).format(`MMM DD`);
 
   return `<p class="trip-info__dates">${firstDay}&nbsp;&mdash;&nbsp;${lastDay}</p>`;
 };

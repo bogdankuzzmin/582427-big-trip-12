@@ -30,17 +30,6 @@ export const typeToEmoji = {
   'RESTAURANT': `🍴`,
 };
 
-export const eventTypes = EVENT_ACTION.types.concat(EVENT_ACTION.activities);
-
-export const CITIES = [
-  `Hawaii`,
-  `Chicago`,
-  `Tokyo`,
-  `Valencia`,
-  `Amsterdam`,
-  `Saint-Petersburg`,
-];
-
 export const InsertPosition = {
   BEFOREBEGIN: `beforebegin`,
   AFTERBEGIN: `afterbegin`,
