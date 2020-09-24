@@ -54,9 +54,7 @@ export const separateEventsIntoDays = (sortedEvents) => {
 export const getPrepositon = (actionType) => {
   const type = capitalizeFirstLetter(actionType);
 
-  let preposition = Object.values(EVENT_ACTION.activities).includes(type) ? `in` : `to`;
-
-  return preposition;
+  return Object.values(EVENT_ACTION.activities).includes(type) ? `in` : `to`;
 };
 
 export const getOffers = (offers, type) => {
