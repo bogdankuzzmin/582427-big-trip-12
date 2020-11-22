@@ -58,7 +58,6 @@ Promise.all([
     siteMenuPresenter.init();
     filterPresenter.init();
     tripControlsPresenter.setEventAddButtonToggleDisable(false);
-
   })
   .catch(() => {
     eventsModel.setError(UpdateType.ERROR);
