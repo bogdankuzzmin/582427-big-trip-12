@@ -17,7 +17,7 @@
     "eslint-config-htmlacademy": "0.5.2",
     "flatpickr": "4.6.6",
     "he": "1.2.0",
-    "moment": "2.28.0",
+    "moment": "2.29.4",
     "random-id": "1.0.4",
     "style-loader": "1.2.1",
     "webpack": "4.44.1",
