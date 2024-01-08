@@ -2,7 +2,6 @@
 
 * Student: [Bogdan Kuzmin](https://up.htmlacademy.ru/ecmascript/12/user/582427).
 * Mentor: [Михаил Семиколенов](https://htmlacademy.ru/profile/id19706).
-* Online version: [Big Trip](http://bogdankuzmin.com/projects/big-trip/).
 
 ---
 
